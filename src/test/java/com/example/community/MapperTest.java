@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import java.util.Date;
 import java.util.List;
 
 /**
@@ -34,11 +35,23 @@ public class MapperTest {
         for(DiscussPost post:list){
             System.out.println(post);
         }*/
+        User user = new User();
+        user.setId(2);
+        user.setUsername("test");
+        user.setPassword("123456");
+        user.setSalt("fae312");
+        user.setEmail("123.qq.com");
+        user.setType(1);
+        user.setStatus(1);
+        user.setActivationCode(null);
+        user.setHeaderUrl(null);
+        user.setCreateTime(new Date());
+        userMapper.insertUser(user);
         //userMapper.updateStatus(111,1);
         // User user = userMapper.selectById(111);
         // System.out.println(user);
 
         // System.out.println("查询到的记录行数："+count);
-        mailClient.sendMail("yaosunique@gmail.com","test","Hello STMP!");
+        // mailClient.sendMail("yaosunique@gmail.com","test","Hello STMP!");
     }
 }
