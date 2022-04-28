@@ -95,15 +95,24 @@ public class UserService implements CommunityConstant {
         return map;
     }
     public int activation(int userId, String code) {
+        /**
+         * 激活结果的三种情况：
+         * 0. 成功
+         * 1. 重复激活
+         * 2. 失败
+         */
         User user = userMapper.selectById(userId);
         if (user.getStatus() == 1) {
+            // status=1，已激活
             return ACTIVATION_REPEAT;
         } else if (user.getActivationCode().equals(code)) {
+            // 提供的激活码和设置得激活码匹配，则激活成功
             userMapper.updateStatus(userId, 1);
             return ACTIVATION_SUCCESS;
         } else {
             return ACTIVATION_FAILURE;
         }
     }
+
 
 }
