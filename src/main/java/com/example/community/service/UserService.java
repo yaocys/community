@@ -1,6 +1,8 @@
 package com.example.community.service;
 
+import com.example.community.dao.LoginTicketMapper;
 import com.example.community.dao.UserMapper;
+import com.example.community.entity.LoginTicket;
 import com.example.community.entity.User;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
@@ -29,6 +31,8 @@ public class UserService implements CommunityConstant {
     private MailClient mailClient;
     @Autowired
     private TemplateEngine templateEngine;
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     @Value("${community.path.domain}")
     private String domain;
@@ -114,5 +118,41 @@ public class UserService implements CommunityConstant {
         }
     }
 
+    public Map<String,Object> login(String username,String password,long expiredSeconds){
+        Map<String,Object> map = new HashMap<>();
+        if(StringUtils.isBlank(username)){
+            map.put("usernameMsg","账号不能为空");
+            return map;
+        }
+        if(StringUtils.isBlank(password)){
+            map.put("password","密码不能为空");
+            return map;
+        }
+        User user = userMapper.selectByName(username);
+        if(user==null){
+            map.put("usernameMsg","账号不能为空");
+            return map;
+        }
+        if(user.getStatus() == 0){
+            map.put("usernameMsg","账号未激活");
+        }
+        // 验证密码
+        password = CommunityUtil.md5(password+user.getSalt());
+        if(!user.getPassword().equals(password)){
+            map.put("passwordMsg","密码不正确");
+            return map;
+        }
 
+        // 生成登录凭证
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(user.getId());
+        loginTicket.setTicket(CommunityUtil.generateUUID());
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds*1000));
+        loginTicketMapper.insertLoginTicket(loginTicket);
+        // 返回给客户端的凭证
+        map.put("ticket",loginTicket.getTicket());
+
+        return map;
+    }
 }

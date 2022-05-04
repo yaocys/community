@@ -1,8 +1,10 @@
 package com.example.community;
 
 import com.example.community.dao.DiscussPostMapper;
+import com.example.community.dao.LoginTicketMapper;
 import com.example.community.dao.UserMapper;
 import com.example.community.entity.DiscussPost;
+import com.example.community.entity.LoginTicket;
 import com.example.community.entity.User;
 import com.example.community.util.MailClient;
 import org.junit.jupiter.api.Test;
@@ -10,6 +12,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import javax.annotation.Resource;
+import javax.xml.crypto.Data;
 import java.util.Date;
 import java.util.List;
 
@@ -27,6 +30,9 @@ public class MapperTest {
 
     @Autowired
     private MailClient mailClient;
+
+    @Autowired
+    private LoginTicketMapper loginTicketMapper;
 
     @Test
     public void testSelectPost(){
@@ -53,5 +59,17 @@ public class MapperTest {
 
         // System.out.println("查询到的记录行数："+count);
         // mailClient.sendMail("yaosunique@gmail.com","test","Hello STMP!");
+    }
+
+    @Test
+    public void testLoginTicket(){
+        /*LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setId(101);
+        loginTicket.setTicket("abc");
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis()+1000*60*10));
+        loginTicketMapper.insertLoginTicket(loginTicket);*/
+        System.out.println(loginTicketMapper.selectByTicket("abc"));
+        loginTicketMapper.updateStatus("abc",1);
     }
 }
