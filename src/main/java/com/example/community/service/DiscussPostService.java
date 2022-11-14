@@ -20,6 +20,11 @@ public class DiscussPostService {
     @Autowired
     private SensitiveFilter sensitiveFilter;
 
+    /**
+     * 这里应该是包含用户信息的，根据userId
+     * 可以在mybatis时关联，也可以分开
+     * 这里分开是为了后面Redis缓存方便
+     */
     public List<DiscussPost> findDiscussPosts(int userId,int offset,int limit){
         return discussPostMapper.selectDiscussPosts(userId, offset, limit);
     }
@@ -28,6 +33,9 @@ public class DiscussPostService {
         return discussPostMapper.selectDiscussPostRows(userId);
     }
 
+    /**
+     * 新增帖子会对帖子标题和内容进行过滤和转义
+     */
     public int addDiscussPost(DiscussPost discussPost){
         if (discussPost==null){
             throw new IllegalArgumentException("帖子参数不能为空！");

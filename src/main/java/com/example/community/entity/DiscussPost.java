@@ -3,6 +3,7 @@ package com.example.community.entity;
 import java.util.Date;
 
 /**
+ * 帖子实体类
  * @author yao 2022/4/12
  */
 public class DiscussPost {

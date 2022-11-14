@@ -39,6 +39,7 @@ public class UserService implements CommunityConstant {
 
     @Value("${server.servlet.context-path}")
     private String contextPath;
+
     public User findUserById(int id){
         return userMapper.selectById(id);
     }
@@ -98,6 +99,10 @@ public class UserService implements CommunityConstant {
 
         return map;
     }
+
+    /**
+     * 注册激活
+     */
     public int activation(int userId, String code) {
         /**
          * 激活结果的三种情况：

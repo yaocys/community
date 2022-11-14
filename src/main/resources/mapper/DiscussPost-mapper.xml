@@ -5,8 +5,11 @@
 <mapper namespace="com.example.community.dao.DiscussPostMapper">
 
     <sql id="selectFields">
-id,user_id,title,content,type,status,create_time,comment_count,score</sql>
+        id
+        ,user_id,title,content,type,status,create_time,comment_count,score</sql>
 
+    <!--查询帖子列表，userID是动态参数
+    order by type是为了置顶-->
     <select id="selectDiscussPosts" resultType="DiscussPost">
         select
         <include refid="selectFields"/>
@@ -17,6 +20,15 @@ id,user_id,title,content,type,status,create_time,comment_count,score</sql>
         limit #{offset},#{limit};
     </select>
 
+    <!--根据帖子ID查帖子，为了帖子详情服务-->
+    <select id="selectDiscussPostById" resultType="DiscussPost">
+        select
+        <include refid="selectFields"></include>
+        from discuss_post
+        where id = #{id}
+    </select>
+
+    <!--查询帖子行数…是为了那里服务的？-->
     <select id="selectDiscussPostRows" resultType="int">
         select count(id)
         from discuss_post
@@ -25,17 +37,13 @@ id,user_id,title,content,type,status,create_time,comment_count,score</sql>
     </select>
 
     <insert id="insertDiscussPost" parameterType="DiscussPost">
-        insert into discuss_post(user_id,title,content,type,status,create_time,comment_count,score)
-            values (#{userId},#{title},#{content},#{type},#{status},#{createTime},#{commentCount},#{score})
+        insert into discuss_post(user_id, title, content, type, status, create_time, comment_count, score)
+        values (#{userId}, #{title}, #{content}, #{type}, #{status}, #{createTime}, #{commentCount}, #{score})
     </insert>
 
-    <select id="selectDiscussPostById" resultType="DiscussPost">
-        select <include refid="selectFields"></include>
-        from discuss_post
-        where id = #{id}
-    </select>
-
     <update id="updateCommentCount">
-        update discuss_post set comment_count = #{commentCount} where id = #{id}
+        update discuss_post
+        set comment_count = #{commentCount}
+        where id = #{id}
     </update>
 </mapper>
