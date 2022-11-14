@@ -147,6 +147,7 @@ public class UserService implements CommunityConstant {
         LoginTicket loginTicket = new LoginTicket();
         loginTicket.setUserId(user.getId());
         loginTicket.setTicket(CommunityUtil.generateUUID());
+        // 这里用session的SessionID不行吗？
         loginTicket.setStatus(0);
         loginTicket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds*1000));
         loginTicketMapper.insertLoginTicket(loginTicket);
@@ -155,4 +156,22 @@ public class UserService implements CommunityConstant {
 
         return map;
     }
+
+    public void logout(String ticket){
+        loginTicketMapper.updateStatus(ticket,1);
+        // 修改登录凭证无效
+    }
+
+    public LoginTicket findLoginTicket(String ticket){
+        return loginTicketMapper.selectByTicket(ticket);
+    }
+
+    public int updateHeader(int userId,String headUrl){
+        return userMapper.updateHeader(userId,headUrl);
+    }
+
+    public User findUserByName(String username) {
+        return userMapper.selectByName(username);
+    }
+
 }

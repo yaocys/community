@@ -11,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.CookieValue;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -26,10 +27,15 @@ import java.io.OutputStream;
 import java.util.Base64;
 import java.util.Map;
 
+/**
+ * @author yaosu
+ */
 @Controller
 public class LoginController implements CommunityConstant {
 
-    // 日志对象
+    /**
+     * 日志对象
+     */
     private static final Logger logger = LoggerFactory.getLogger(LoginController.class);
     @Autowired
     private UserService userService;
@@ -109,8 +115,9 @@ public class LoginController implements CommunityConstant {
             model.addAttribute("codeMsg","验证码不正确");
             return "/site/login";
         }
-        // 检查账号、密码
+        // 是否勾选“记住我”->保存时间不同
         int expiredSeconds = rememberme?REMEMBER_EXPIRED_SECONDS:DEFAULT_EXPIRED_SECONDS;
+        // 检查账号、密码
         Map<String,Object> map = userService.login(username,password,expiredSeconds);
 
         if(map.containsKey("ticket")){
@@ -124,5 +131,11 @@ public class LoginController implements CommunityConstant {
             model.addAttribute("passwordMsg",map.get("passwordMsg"));
             return "site/login";
         }
+    }
+
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public String logout(@CookieValue("ticket")String ticket){
+        userService.logout(ticket);
+        return "redirect:/login";
     }
 }

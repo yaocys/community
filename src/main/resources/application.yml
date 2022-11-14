@@ -5,6 +5,7 @@ server:
 community:
   path:
     domain: http://localhost:8080
+    upload: C:/Users/yaosu/IdeaProjects/work/data/upload
 
 spring:
   thymeleaf:
@@ -31,6 +32,12 @@ spring:
         smtp:
           ssl:
             enable: true
+
+  # Redis配置
+  redis:
+    database: 11
+    host: 120.24.169.221
+    password: Ue!p41Redis
 
 # 注解开发不需要配置mybatis
 mybatis:

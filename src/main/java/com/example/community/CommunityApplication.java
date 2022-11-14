@@ -3,6 +3,9 @@ package com.example.community;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * @author yaosu
+ */
 @SpringBootApplication
 public class CommunityApplication {
 
