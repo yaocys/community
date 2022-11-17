@@ -21,10 +21,8 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 import java.awt.image.BufferedImage;
-import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Base64;
 import java.util.Map;
 
 /**
@@ -46,6 +44,9 @@ public class LoginController implements CommunityConstant {
     @Value("${server.servlet.context-path")
     private String contextPath;
 
+    /**
+     * 返回注册页面
+     */
     @RequestMapping(path = "/register", method = RequestMethod.GET)
     public String getRegisterPage() {
         return "/site/register";
@@ -56,14 +57,20 @@ public class LoginController implements CommunityConstant {
         return "/site/login";
     }
 
+    /**
+     * 注册方法
+     * @param user 要注册的用户对象
+     */
     @RequestMapping(path = "/register", method = RequestMethod.POST)
     public String register(Model model, User user) {
         Map<String, Object> map = userService.register(user);
         if (map == null || map.isEmpty()) {
+            // 注册成功，跳转到结果页面
             model.addAttribute("msg", "注册成功,我们已经向您的邮箱发送了一封激活邮件,请尽快激活!");
             model.addAttribute("target", "/index");
             return "/site/operate-result";
         } else {
+            // 注册失败，填入提示信息并刷新回注册页面
             model.addAttribute("usernameMsg", map.get("usernameMsg"));
             model.addAttribute("passwordMsg", map.get("passwordMsg"));
             model.addAttribute("emailMsg", map.get("emailMsg"));
@@ -71,7 +78,12 @@ public class LoginController implements CommunityConstant {
         }
     }
 
-    // http://localhost:8080/community/activation/101/code
+    /**
+     * 激活链接处理
+     * <a href="http://localhost:8080/community/activation/101/code">...</a>
+     * @param userId 用户ID
+     * @param code 激活码
+     */
     @RequestMapping(path = "/activation/{userId}/{code}", method = RequestMethod.GET)
     public String activation(Model model, @PathVariable("userId") int userId, @PathVariable("code") String code) {
         int result = userService.activation(userId, code);
@@ -88,6 +100,10 @@ public class LoginController implements CommunityConstant {
         return "/site/operate-result";
     }
 
+    /**
+     * 生成验证码图片
+     * @param session 用于存放
+     */
     @RequestMapping(path = "/kaptcha",method = RequestMethod.GET)
     public void getKaptcha(HttpServletResponse response, HttpSession session){
         // 获取四位字符串
@@ -106,6 +122,17 @@ public class LoginController implements CommunityConstant {
 
     }
 
+    /**
+     * 注意这里的登陆成功重定向，登陆成功时是没有保存用户信息的，header上个人信息栏也不会显示
+     * 重定向会刷新一次页面，再次加载用户信息
+     * @param username 用户名
+     * @param password 密码
+     * @param code 验证码
+     * @param rememberme “记住我”
+     * @param model 存视图数据
+     * @param session 存验证码
+     * @param response 返回验证码图片
+     */
     @RequestMapping(path = "/login",method = RequestMethod.POST)
     public String login(String username,String password,String code,boolean rememberme,Model model,HttpSession session,HttpServletResponse response){
         // 判断验证码
@@ -122,6 +149,7 @@ public class LoginController implements CommunityConstant {
 
         if(map.containsKey("ticket")){
             Cookie cookie = new Cookie("ticket",map.get("ticket").toString());
+            // 设置生效范围
             cookie.setPath(contextPath);
             cookie.setMaxAge(expiredSeconds);
             response.addCookie(cookie);
@@ -133,6 +161,9 @@ public class LoginController implements CommunityConstant {
         }
     }
 
+    /**
+     * 注意这里也是重定向刷新页面
+     */
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public String logout(@CookieValue("ticket")String ticket){
         userService.logout(ticket);

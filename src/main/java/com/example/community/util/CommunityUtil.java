@@ -8,26 +8,25 @@ import java.util.Map;
 import java.util.UUID;
 
 /**
+ * 通用工具类
  * @author yaosu
  */
 public class CommunityUtil {
 
     /**
      * 生成随机字符串
-     *
-     * @return
      */
     public static String generateUUID() {
         return UUID.randomUUID().toString().replaceAll("-", "");
     }
 
-    // MD5加密
-    // hello -> abc123def456
-    // hello + 3e4a8 -> abc123def456abc
+    /**
+     * 对加盐的字符串生成对应的MD5字符串
+     * @param key 对加盐的字符串
+     * @return 生成的MD5字符串
+     */
     public static String md5(String key) {
-        if (StringUtils.isBlank(key)) {
-            return null;
-        }
+        if (StringUtils.isBlank(key))return null;
         return DigestUtils.md5DigestAsHex(key.getBytes());
     }
 

@@ -10,8 +10,7 @@ import org.apache.ibatis.annotations.*;
 public interface LoginTicketMapper {
     /**
      * 登陆成功插入一个凭证
-     * @param loginTicket
-     * @return
+     * @param loginTicket 登录凭证对象
      */
     @Insert({
             "insert into login_ticket(user_id,ticket,status,expired) ",
@@ -28,9 +27,8 @@ public interface LoginTicketMapper {
 
     /**
      * 修改登陆状态，而不是真的删除
-     * @param ticket
-     * @param status
-     * @return
+     * @param ticket 凭证字段
+     * @param status 状态
      */
     @Update({
             "update login_ticket set status=#{status} where ticket=#{ticket}"

@@ -25,12 +25,8 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
     private HostHolder hostHolder;
 
     /**
+     * Controller之前执行
      * 在请求开始之初，使用凭证获取用户，并将用户暂存
-     * @param request
-     * @param response
-     * @param handler
-     * @return
-     * @throws Exception
      */
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
@@ -50,6 +46,10 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
         return true;
     }
 
+    /**
+     * Controller之后执行
+     * 为什么要手动放到ModelAndView中
+     */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
         User user = hostHolder.getUser();
@@ -58,6 +58,10 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
         }
     }
 
+    /**
+     * 在模板引擎之后执行
+     * 请求结束清除
+     */
     @Override
     public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
         hostHolder.clear();

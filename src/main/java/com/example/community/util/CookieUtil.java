@@ -4,6 +4,7 @@ import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 
 /**
+ * 遍历请求携带的cookie列表，获取到指定key的cookie
  * @author yao 2022/5/4
  */
 public class CookieUtil {

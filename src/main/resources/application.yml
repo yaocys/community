@@ -2,6 +2,7 @@ server:
   servlet:
     context-path: /community
 
+# 这里是自定义的配置信息
 community:
   path:
     domain: http://localhost:8080
@@ -21,6 +22,7 @@ spring:
       maximum-pool-size: 15
       minimum-idle: 5
       idle-timeout: 30000
+  # Mail
   mail:
     host: smtp.qq.com
     username: 1982125467@qq.com
@@ -48,5 +50,3 @@ mybatis:
     # 启用自动增长组件
     map-underscore-to-camel-case: true
     # 自动匹配驼峰和_命名方式
-
-# Mail

@@ -42,7 +42,7 @@
                         <li class="nav-item ml-3 btn-group-vertical dropdown" th:if="${loginUser!=null}">
                             <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button"
                                data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
-                                <img th:src="${loginUser.headerUrl}" class="rounded-circle" style="width:30px;"/>
+                                <img th:src="${loginUser.headerUrl}" class="rounded-circle" style="width:30px;" alt="个人中心头像"/>
                             </a>
                             <div class="dropdown-menu" aria-labelledby="navbarDropdown">
                                 <a class="dropdown-item text-center" href="site/profile.html">个人主页</a>
@@ -175,7 +175,7 @@
                     </li>
 
                     <li th:class="|page-item ${page.current==page.total?'disabled':''}|">
-                        <a class="page-link" th:href="@{${page.path}(current=${(page.current)+1})}">下一页</a>
+                        <a class="page-link" th:href="@{${page.path}(current=${page.current+1})}">下一页</a>
                     </li>
                     <li class="page-item">
                         <a class="page-link" th:href="@{${page.path}(current=${page.total})}">末页</a>

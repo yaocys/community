@@ -27,16 +27,28 @@ public class UserService implements CommunityConstant {
     // 根据查询结果中的user_id替换为用户名
     @Autowired
     private UserMapper userMapper;
+    /**
+     * 邮件发送工具类
+     */
     @Autowired
     private MailClient mailClient;
+    /**
+     * 模板引擎对象
+     */
     @Autowired
     private TemplateEngine templateEngine;
     @Autowired
     private LoginTicketMapper loginTicketMapper;
 
+    /**
+     * 用于拼激活链接的域名
+     */
     @Value("${community.path.domain}")
     private String domain;
 
+    /**
+     * 用于拼激活链接的项目名
+     */
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
@@ -44,10 +56,11 @@ public class UserService implements CommunityConstant {
         return userMapper.selectById(id);
     }
 
+    // TODO 或许这里能封装一个统一的Result返回对象
     public Map<String, Object> register(User user) {
         Map<String, Object> map = new HashMap<>();
 
-        // 空值处理
+        // 空值处理与参数校验
         if (user == null) {
             throw new IllegalArgumentException("参数不能为空!");
         }
@@ -63,14 +76,12 @@ public class UserService implements CommunityConstant {
             map.put("emailMsg", "邮箱不能为空!");
             return map;
         }
-
-        // 验证账号
+        // 验证用户名是否重复
         User u = userMapper.selectByName(user.getUsername());
         if (u != null) {
             map.put("usernameMsg", "该账号已存在!");
             return map;
         }
-
         // 验证邮箱
         u = userMapper.selectByEmail(user.getEmail());
         if (u != null) {
@@ -83,18 +94,23 @@ public class UserService implements CommunityConstant {
         user.setPassword(CommunityUtil.md5(user.getPassword() + user.getSalt()));
         user.setType(0);
         user.setStatus(0);
+        // 生成一个UUID作为激活码并保存到数据库
+        // TODO 这里的激活码并不需要持久化，后面可以放到Redis中并定时过期
         user.setActivationCode(CommunityUtil.generateUUID());
         user.setHeaderUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
         user.setCreateTime(new Date());
         userMapper.insertUser(user);
 
-        // 激活邮件
+        // 准备一个Thymeleaf的Context对象
         Context context = new Context();
+        // 把邮箱地址和激活链接交给thymeleaf，让它动态地放到邮件中
         context.setVariable("email", user.getEmail());
         // http://localhost:8080/community/activation/101/code
         String url = domain + contextPath + "/activation/" + user.getId() + "/" + user.getActivationCode();
         context.setVariable("url", url);
+        // 生成html格式地内容
         String content = templateEngine.process("/mail/activation", context);
+        // 发送邮件
         mailClient.sendMail(user.getEmail(), "激活账号", content);
 
         return map;
