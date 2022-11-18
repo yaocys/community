@@ -35,13 +35,17 @@ public class DiscussPostController implements CommunityConstant {
     @Autowired
     private CommentService commentService;
 
+    /**
+     * 发布帖子
+     * @param title 标题
+     * @param content 内容
+     * @return JSON格式相应消息
+     */
     @RequestMapping(path = "/add",method = RequestMethod.POST)
     @ResponseBody
     public String addDiscussPost(String title,String content){
         User user = hostHolder.getUser();
-        if (user==null){
-            return CommunityUtil.getJSONString(403,"用户未登录！");
-        }
+        if (user==null) return CommunityUtil.getJSONString(403,"用户未登录！");
         DiscussPost discussPost = new DiscussPost();
         discussPost.setUserId(user.getId());
         discussPost.setTitle(title);
@@ -53,12 +57,16 @@ public class DiscussPostController implements CommunityConstant {
         return CommunityUtil.getJSONString(0,"帖子发布成功！");
     }
 
+    /**
+     * 显示帖子详情
+     * @param discussPostId 帖子ID
+     */
     @RequestMapping(path = "/detail/{discussPostId}", method = RequestMethod.GET)
     public String getDiscussPost(@PathVariable("discussPostId") int discussPostId, Model model, Page page) {
-        // 帖子
+        // TODO 这里其实可以用MyBatis关联查询，效率高但是有耦合
         DiscussPost post = discussPostService.findDiscussPostById(discussPostId);
         model.addAttribute("post", post);
-        // 作者
+
         User user = userService.findUserById(post.getUserId());
         model.addAttribute("user", user);
 

@@ -29,6 +29,9 @@ public class DiscussPostService {
         return discussPostMapper.selectDiscussPosts(userId, offset, limit);
     }
 
+    /**
+     * 返回帖子总行数
+     */
     public int findDiscussPostRows(int userId){
         return discussPostMapper.selectDiscussPostRows(userId);
     }

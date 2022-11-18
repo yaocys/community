@@ -30,6 +30,13 @@ public class CommunityUtil {
         return DigestUtils.md5DigestAsHex(key.getBytes());
     }
 
+    /**
+     * 转json格式字符串
+     * @param code 相应码
+     * @param msg 消息
+     * @param map 数据
+     * @return json格式字符串
+     */
     public static String getJSONString(int code, String msg, Map<String, Object> map) {
         JSONObject jsonObject = new JSONObject();
         jsonObject.put("code", code);
@@ -42,10 +49,16 @@ public class CommunityUtil {
         return jsonObject.toJSONString();
     }
 
+    /**
+     * 重载
+     */
     public static String getJSONString(int code, String msg) {
         return getJSONString(code,msg,null);
     }
 
+    /**
+     * 重载
+     */
     public static String getJSONString(int code){
         return getJSONString(code,null,null);
     }

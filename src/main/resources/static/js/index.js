@@ -1,8 +1,10 @@
 $(function(){
+	// 给按钮绑定单击事件
 	$("#publishBtn").click(publish);
 });
 
 function publish() {
+	// 隐藏帖子内容的编辑框
 	$("#publishModal").modal("hide");
 	// 获取标题和内容
 	const title = $("#recipient-name").val();
@@ -21,10 +23,8 @@ function publish() {
 			// 2s后自动隐藏提示框
 			setTimeout(function(){
 				$("#hintModal").modal("hide");
-				// 刷新页面
-				if (data.code==0){
-					window.location.reload();
-				}
+				// 发送成功，刷新页面
+				if (data.code==0) window.location.reload();
 			}, 2000);
 		}
 	);
