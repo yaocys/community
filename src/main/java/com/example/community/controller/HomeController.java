@@ -4,7 +4,9 @@ import com.example.community.entity.DiscussPost;
 import com.example.community.entity.Page;
 import com.example.community.entity.User;
 import com.example.community.service.DiscussPostService;
+import com.example.community.service.LikeService;
 import com.example.community.service.UserService;
+import com.example.community.util.CommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,11 +22,14 @@ import java.util.Map;
  * @author yao 2022/4/17
  */
 @Controller
-public class HomeController {
+public class HomeController implements CommunityConstant {
     @Autowired
     private DiscussPostService discussPostService;
     @Autowired
     private UserService userService;
+
+    @Autowired
+    private LikeService likeService;
 
     /**
      * 这里的两个参数是被Spring mvc自动注入并实例化的
@@ -49,6 +54,11 @@ public class HomeController {
                 map.put("post", post);
                 User user = userService.findUserById(post.getUserId());
                 map.put("user", user);
+
+                // 查询列表显示赞的数量
+                long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
+                map.put("likeCount",likeCount);
+
                 discussPosts.add(map);
             }
         }

@@ -38,7 +38,7 @@ spring:
   # Redis配置
   redis:
     database: 11
-    host: 120.24.169.221
+    host: 43.139.72.73
     password: Ue!p41Redis
 
 # 注解开发不需要配置mybatis
