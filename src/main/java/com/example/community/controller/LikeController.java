@@ -29,11 +29,11 @@ public class LikeController {
      */
     @PostMapping("/like")
     @ResponseBody
-    public String like(int entityType,int entityId){
+    public String like(int entityType,int entityId,int entityAuthorId){
         // TODO 这里后面会用权限管理框架统一处理
         User user = hostHolder.getUser();
 
-        likeService.like(user.getId(), entityType,entityId);
+        likeService.like(user.getId(), entityType,entityId,entityAuthorId);
 
         long likeCount = likeService.findEntityLikeCount(entityType, entityId);
 

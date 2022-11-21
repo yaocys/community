@@ -2,6 +2,7 @@ package com.example.community.controller;
 
 import com.example.community.annotation.LoginRequired;
 import com.example.community.entity.User;
+import com.example.community.service.LikeService;
 import com.example.community.service.UserService;
 import com.example.community.util.CommunityUtil;
 import com.example.community.util.HostHolder;
@@ -10,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -40,6 +42,8 @@ public class UserController {
      */
     @Autowired
     private HostHolder hostHolder;
+    @Autowired
+    LikeService likeService;
 
     /**
      * 返回设置页面视图
@@ -113,5 +117,22 @@ public class UserController {
         } catch (IOException e) {
             throw new RuntimeException("读取头像文件失败："+e);
         }
+    }
+
+    /**
+     * 查看指定用户的个人主页
+     * @param userId 用户ID
+     */
+    @GetMapping("/profile/{userId}")
+    public String getProfilePage(@PathVariable("userId") int userId,Model model){
+        User user = userService.findUserById(userId);
+
+        if(user==null) throw new RuntimeException("该用户不存在！");
+        model.addAttribute("user",user);
+
+        int likeCount = likeService.findUserLikeCount(userId);
+        model.addAttribute("likeCount",likeCount);
+
+        return "/site/profile";
     }
 }

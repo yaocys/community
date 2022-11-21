@@ -19,8 +19,8 @@ public class RedisKeyUtil {
 
 
     /**
-     * like:entity:entityType:entityId -> set(userId)
      * 用set存某个实例收到的赞（保存点赞用户的ID），需要知道是谁点的赞
+     * like:entity:entityType:entityId -> set(userId)
      * @param entityType 被点赞的实体类型
      * @param entityId 被点赞实体类型的ID
      * @return like:entity:entityType:entityId
@@ -29,8 +29,12 @@ public class RedisKeyUtil {
         return PREFIX_ENTITY_LIKE + SPLIT + entityType + SPLIT + entityId;
     }
 
-    // 某个用户的赞
-    // like:user:userId -> int
+    /**
+     * 某个用户收到的赞
+     * like:user:userId -> int
+     * @param userId 被赞的用户ID
+     * @return key名
+     */
     public static String getUserLikeKey(int userId) {
         return PREFIX_USER_LIKE + SPLIT + userId;
     }
