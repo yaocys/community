@@ -10,6 +10,7 @@ import com.example.community.util.CommunityConstant;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
@@ -30,6 +31,14 @@ public class HomeController implements CommunityConstant {
 
     @Autowired
     private LikeService likeService;
+
+    /**
+     * 访问根路径重定向到首页
+     */
+    @GetMapping("/")
+    public String rootPage(){
+        return "forward:/index";
+    }
 
     /**
      * 这里的两个参数是被Spring mvc自动注入并实例化的

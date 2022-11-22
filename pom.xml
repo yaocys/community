@@ -12,7 +12,8 @@
 	<artifactId>community</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>community</name>
-	<description>Demo project for Spring Boot</description>
+	<description>Web Community</description>
+	<packaging>war</packaging>
 	<properties>
 		<java.version>11</java.version>
 	</properties>
