@@ -1,7 +1,7 @@
 # 这里是自定义的配置信息
 community:
   path:
-    domain: http://localhost:8080
+    domain: http://127.0.0.1:8080
     upload: C:/Users/yaosu/IdeaProjects/work/data/upload
 
 spring:
