@@ -3,11 +3,17 @@ package com.example.community.service;
 import com.example.community.dao.DiscussPostMapper;
 import com.example.community.entity.DiscussPost;
 import com.example.community.util.SensitiveFilter;
+import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.ibatis.annotations.Mapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.util.HtmlUtils;
 
+import javax.annotation.PostConstruct;
 import java.util.List;
 
 /**
@@ -15,10 +21,35 @@ import java.util.List;
  */
 @Service
 public class DiscussPostService {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
     @Autowired
     private DiscussPostMapper discussPostMapper;
     @Autowired
     private SensitiveFilter sensitiveFilter;
+
+    @Value("${caffeine.posts.max-size}")
+    private int maxSize;
+
+    @Value("${caffeine.posts.expire-seconds}")
+    private int expireSecond;
+
+    /**
+     * 帖子列表缓存
+     */
+    private LoadingCache<String ,List<DiscussPost>> postListCache;
+
+    /**
+     * 帖子总数缓存
+     */
+    private LoadingCache<Integer,Integer> postRowsCache;
+
+    /**
+     * 初始化帖子列表缓存和帖子总数缓存
+     */
+    @PostConstruct
+    public void init(){
+        //
+    }
 
     /**
      * 这里应该是包含用户信息的，根据userId

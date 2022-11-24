@@ -8,7 +8,13 @@ public class RedisKeyUtil {
     private static final String SPLIT = ":";
     private static final String PREFIX_ENTITY_LIKE = "like:entity";
     private static final String PREFIX_USER_LIKE = "like:user";
+    /**
+     * 前缀，被关注者
+     */
     private static final String PREFIX_FOLLOWEE = "followee";
+    /**
+     * 前缀，关注者
+     */
     private static final String PREFIX_FOLLOWER = "follower";
     private static final String PREFIX_KAPTCHA = "kaptcha";
     private static final String PREFIX_TICKET = "ticket";
@@ -39,29 +45,45 @@ public class RedisKeyUtil {
         return PREFIX_USER_LIKE + SPLIT + userId;
     }
 
-    // 某个用户关注的实体
-    // followee:userId:entityType -> zset(entityId,now)
+    /**
+     * 某个用户关注了哪些实体的zset的key
+     * followee:userId:entityType -> zset(entityId,now)
+     * @param userId 关注者
+     * @param entityType 实体类型
+     */
     public static String getFolloweeKey(int userId, int entityType) {
         return PREFIX_FOLLOWEE + SPLIT + userId + SPLIT + entityType;
     }
 
-    // 某个实体拥有的粉丝
-    // follower:entityType:entityId -> zset(userId,now)
+    /**
+     * 某个实体拥有的粉丝的zet的key
+     * follower:entityType:entityId -> zset(userId,now)
+     * @param entityType 实体类型
+     * @param entityId 被关注的实体
+     */
     public static String getFollowerKey(int entityType, int entityId) {
         return PREFIX_FOLLOWER + SPLIT + entityType + SPLIT + entityId;
     }
 
-    // 登录验证码
+    /**
+     * 获取 登录验证码的key
+     * @param owner 验证码的拥有者
+     */
     public static String getKaptchaKey(String owner) {
         return PREFIX_KAPTCHA + SPLIT + owner;
     }
 
-    // 登录的凭证
+    /**
+     * 获取 登录凭证的key
+     * @param ticket 登录凭证
+     */
     public static String getTicketKey(String ticket) {
         return PREFIX_TICKET + SPLIT + ticket;
     }
 
-    // 用户
+    /**
+     * 获取 缓存中用户信息的key
+     */
     public static String getUserKey(int userId) {
         return PREFIX_USER + SPLIT + userId;
     }

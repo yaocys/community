@@ -1,7 +1,3 @@
-server:
-  servlet:
-    context-path: /community
-
 # 这里是自定义的配置信息
 community:
   path:
@@ -11,42 +7,3 @@ community:
 spring:
   thymeleaf:
     cache: true
-  datasource:
-    driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://43.139.72.73:3306/community?characterEncoding=utf-8&useSSL=false&serverTimezone=Hongkong
-    username: remote
-    password: Remote123
-    # 数据库连接池
-    type: com.zaxxer.hikari.HikariDataSource
-    hikari:
-      maximum-pool-size: 15
-      minimum-idle: 5
-      idle-timeout: 30000
-  # Mail
-  mail:
-    host: smtp.qq.com
-    username: 1982125467@qq.com
-    port: 465
-    password: zcuemuorybxfbcca
-    protocol: smtps
-    properties:
-      mail:
-        smtp:
-          ssl:
-            enable: true
-
-  # Redis配置
-  redis:
-    database: 11
-    host: 43.139.72.73
-    password: Ue!p41Redis
-
-# 注解开发不需要配置mybatis
-mybatis:
-  mapper-locations: classpath:mapper/*.xml
-  type-aliases-package: com.example.community.entity
-  configuration:
-    use-generated-keys: true
-    # 启用自动增长组件
-    map-underscore-to-camel-case: true
-    # 自动匹配驼峰和_命名方式
