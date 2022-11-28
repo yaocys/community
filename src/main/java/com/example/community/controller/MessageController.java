@@ -10,10 +10,7 @@ import com.example.community.util.HostHolder;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
 
@@ -34,11 +31,8 @@ public class MessageController {
 
     /**
      * 私信列表
-     * @param model
-     * @param page
-     * @return
      */
-    @RequestMapping(path = "/letter/list", method = RequestMethod.GET)
+    @GetMapping("/letter/list")
     public String getLetterList(Model model, Page page) {
         User user = hostHolder.getUser();
         // 分页信息
@@ -57,6 +51,7 @@ public class MessageController {
                 map.put("letterCount", messageService.findLetterCount(message.getConversationId()));
                 map.put("unreadCount", messageService.findLetterUnreadCount(user.getId(), message.getConversationId()));
                 int targetId = user.getId() == message.getFromId() ? message.getToId() : message.getFromId();
+                // 用到的是目标用户头像和用户名还有userId
                 map.put("target", userService.findUserById(targetId));
 
                 conversations.add(map);
@@ -71,7 +66,11 @@ public class MessageController {
         return "/site/letter";
     }
 
-    @RequestMapping(path = "/letter/detail/{conversationId}", method = RequestMethod.GET)
+
+    /**
+     * 帖子详情
+     */
+    @GetMapping("/letter/detail/{conversationId}")
     public String getLetterDetail(@PathVariable("conversationId") String conversationId, Page page, Model model) {
         // 分页信息
         page.setLimit(5);
@@ -85,24 +84,28 @@ public class MessageController {
             for (Message message : letterList) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("letter", message);
+                // 显示消息发送人的头像，可能是当前用户，也有可能是目标用户
                 map.put("fromUser", userService.findUserById(message.getFromId()));
                 letters.add(map);
             }
         }
         model.addAttribute("letters", letters);
 
-        // 私信目标
+        // 私信目标（来自XXX的私信）
         model.addAttribute("target", getLetterTarget(conversationId));
 
-        // 设置已读
+        // 用户打开页面就把未读的消息设置为已读
         List<Integer> ids = getLetterIds(letterList);
-        if (!ids.isEmpty()) {
-            messageService.readMessage(ids);
-        }
+
+        if (!ids.isEmpty()) messageService.readMessage(ids);
 
         return "/site/letter-detail";
     }
 
+    /**
+     * 拆分conversationId，查询目标用户
+     * @return 目标User
+     */
     private User getLetterTarget(String conversationId) {
         String[] ids = conversationId.split("_");
         int id0 = Integer.parseInt(ids[0]);
@@ -115,11 +118,15 @@ public class MessageController {
         }
     }
 
+    /**
+     * 找有哪些未读消息的ID
+     */
     private List<Integer> getLetterIds(List<Message> letterList) {
         List<Integer> ids = new ArrayList<>();
 
         if (letterList != null) {
             for (Message message : letterList) {
+                // 当前用户是接收者且消息未读
                 if (hostHolder.getUser().getId() == message.getToId() && message.getStatus() == 0) {
                     ids.add(message.getId());
                 }
@@ -129,7 +136,12 @@ public class MessageController {
         return ids;
     }
 
-    @RequestMapping(path = "/letter/send", method = RequestMethod.POST)
+    /**
+     * 发送私信
+     * @param toName  接收用户的用户名
+     * @param content 私信内容
+     */
+    @PostMapping("/letter/send")
     @ResponseBody
     public String sendLetter(String toName, String content) {
         User target = userService.findUserByName(toName);
