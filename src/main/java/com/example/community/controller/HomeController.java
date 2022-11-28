@@ -74,4 +74,9 @@ public class HomeController implements CommunityConstant {
         model.addAttribute("discussPosts", discussPosts);
         return "/index";
     }
+
+    @GetMapping("/error")
+    public String getErrorPage(){
+        return "/error/500";
+    }
 }

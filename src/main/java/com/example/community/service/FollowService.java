@@ -68,5 +68,8 @@ public class FollowService {
         return redisTemplate.opsForZSet().zCard(followerKey);
     }
 
-    // TODO 查询当前用户是否已经关注
+    public boolean hasFollowed(int userId,int entityType,int entityId){
+        String followeeKey = RedisKeyUtil.getFolloweeKey(userId, entityType);
+        return  redisTemplate.opsForZSet().score(followeeKey,entityType)!=null;
+    }
 }
