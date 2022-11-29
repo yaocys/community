@@ -73,7 +73,7 @@ public class Event {
         return entityUserId;
     }
 
-    public Event EntityUserId(int entityUserId) {
+    public Event setEntityUserId(int entityUserId) {
         this.entityUserId = entityUserId;
         return this;
     }

@@ -25,12 +25,7 @@ public class ServiceLogAspect {
     /**
      * 对service包下所有类，所有参数返回值的所有方法
      */
-    @Pointcut("execution(* com.example.community.service.*.*(..))")
-    public void pointcut(){
-
-    }
-
-    @Before("pointcut()")
+    @Before("execution(* com.example.community.service.*.*(..))")
     public void before(JoinPoint join){
         /*
         获取request对象进而获取用户的IP

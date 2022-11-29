@@ -1,7 +1,7 @@
 package com.example.community.util;
 
 /**
- * Redis key工具类
+ * 生成Redis key工具类
  */
 public class RedisKeyUtil {
 
