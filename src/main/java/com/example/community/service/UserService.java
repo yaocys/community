@@ -4,23 +4,18 @@ import com.example.community.dao.LoginTicketMapper;
 import com.example.community.dao.UserMapper;
 import com.example.community.entity.LoginTicket;
 import com.example.community.entity.User;
-import com.example.community.util.CommunityConstant;
-import com.example.community.util.CommunityUtil;
-import com.example.community.util.MailClient;
-import com.example.community.util.RedisKeyUtil;
+import com.example.community.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Random;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -42,8 +37,8 @@ public class UserService implements CommunityConstant {
      */
     @Autowired
     private TemplateEngine templateEngine;
-/*    @Autowired
-    private LoginTicketMapper loginTicketMapper;*/
+    /*    @Autowired
+        private LoginTicketMapper loginTicketMapper;*/
     @Autowired
     RedisTemplate redisTemplate;
 
@@ -59,13 +54,13 @@ public class UserService implements CommunityConstant {
     @Value("${server.servlet.context-path}")
     private String contextPath;
 
-    public User findUserById(int id){
+    public User findUserById(int id) {
         /*
         重写，从缓存中取用
          */
         // return userMapper.selectById(id);
         User user = getCache(id);
-        if(user==null) user = initCache(id);
+        if (user == null) user = initCache(id);
         return user;
     }
 
@@ -153,28 +148,28 @@ public class UserService implements CommunityConstant {
         }
     }
 
-    public Map<String,Object> login(String username,String password,long expiredSeconds){
-        Map<String,Object> map = new HashMap<>();
-        if(StringUtils.isBlank(username)){
-            map.put("usernameMsg","账号不能为空");
+    public Map<String, Object> login(String username, String password, long expiredSeconds) {
+        Map<String, Object> map = new HashMap<>();
+        if (StringUtils.isBlank(username)) {
+            map.put("usernameMsg", "账号不能为空");
             return map;
         }
-        if(StringUtils.isBlank(password)){
-            map.put("password","密码不能为空");
+        if (StringUtils.isBlank(password)) {
+            map.put("password", "密码不能为空");
             return map;
         }
         User user = userMapper.selectByName(username);
-        if(user==null){
-            map.put("usernameMsg","账号不能为空");
+        if (user == null) {
+            map.put("usernameMsg", "账号不能为空");
             return map;
         }
-        if(user.getStatus() == 0){
-            map.put("usernameMsg","账号未激活");
+        if (user.getStatus() == 0) {
+            map.put("usernameMsg", "账号未激活");
         }
         // 验证密码
-        password = CommunityUtil.md5(password+user.getSalt());
-        if(!user.getPassword().equals(password)){
-            map.put("passwordMsg","密码不正确");
+        password = CommunityUtil.md5(password + user.getSalt());
+        if (!user.getPassword().equals(password)) {
+            map.put("passwordMsg", "密码不正确");
             return map;
         }
 
@@ -184,24 +179,24 @@ public class UserService implements CommunityConstant {
         loginTicket.setTicket(CommunityUtil.generateUUID());
         // 这里用session的SessionID不行吗？
         loginTicket.setStatus(0);
-        loginTicket.setExpired(new Date(System.currentTimeMillis()+expiredSeconds*1000));
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
 
         String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
         // TODO 这里没有设置过期时间，只是标记状态不会导致redis占用越来越大吗
         // 对象会被序列化为字符串
-        redisTemplate.opsForValue().set(redisKey,loginTicket);
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
 
         /*
          被优化弃用的数据库保存
          */
         // loginTicketMapper.insertLoginTicket(loginTicket);
         // 返回给客户端的凭证
-        map.put("ticket",loginTicket.getTicket());
+        map.put("ticket", loginTicket.getTicket());
 
         return map;
     }
 
-    public void logout(String ticket){
+    public void logout(String ticket) {
         // loginTicketMapper.updateStatus(ticket,1);
         // 修改登录凭证无效
         String redisKey = RedisKeyUtil.getTicketKey(ticket);
@@ -209,18 +204,18 @@ public class UserService implements CommunityConstant {
 
         LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisKey);
         loginTicket.setStatus(1);
-        redisTemplate.opsForValue().set(redisKey,loginTicket);
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
     }
 
-    public LoginTicket findLoginTicket(String ticket){
+    public LoginTicket findLoginTicket(String ticket) {
         String redisKey = RedisKeyUtil.getTicketKey(ticket);
         return (LoginTicket) redisTemplate.opsForValue().get(redisKey);
     }
 
-    public int updateHeader(int userId,String headUrl){
+    public int updateHeader(int userId, String headUrl) {
         // FIXME 可能存在不一致
-        int rows = userMapper.updateHeader(userId,headUrl);
-        if(rows>0) clearCache(userId);
+        int rows = userMapper.updateHeader(userId, headUrl);
+        if (rows > 0) clearCache(userId);
         return rows;
     }
 
@@ -231,9 +226,10 @@ public class UserService implements CommunityConstant {
     /**
      * 从缓存中取值
      * 私有主要是给自己使用
+     *
      * @return 用户对象，用户信息
      */
-    private User getCache(int userId){
+    private User getCache(int userId) {
         String redisKey = RedisKeyUtil.getUserKey(userId);
         return (User) redisTemplate.opsForValue().get(redisKey);
     }
@@ -241,20 +237,41 @@ public class UserService implements CommunityConstant {
     /**
      * 当缓存中查不到值的时候去查数据库
      * 并初始化缓存
+     *
      * @return 用户对象，用户信息
      */
-    private User initCache(int userId){
+    private User initCache(int userId) {
         User user = userMapper.selectById(userId);
         String redisKey = RedisKeyUtil.getUserKey(userId);
-        redisTemplate.opsForValue().set(redisKey,user,3600, TimeUnit.SECONDS);
+        redisTemplate.opsForValue().set(redisKey, user, 3600, TimeUnit.SECONDS);
         return user;
     }
 
     /**
      * 数据变更时删除缓存
      */
-    private void clearCache(int userId){
+    private void clearCache(int userId) {
         String redisKey = RedisKeyUtil.getUserKey(userId);
         redisTemplate.delete(redisKey);
+    }
+
+    /**
+     * 获取用户权限字段用来放到securityContext中
+     */
+    public Collection<? extends GrantedAuthority> getAuthorities(int userId) {
+        User user = this.findUserById(userId);
+
+        List<GrantedAuthority> list = new ArrayList<>();
+        list.add((GrantedAuthority) () -> {
+            switch (user.getType()) {
+                case 1:
+                    return AUTHORITY_ADMIN;
+                case 2:
+                    return AUTHORITY_MODERATOR;
+                default:
+                    return AUTHORITY_USER;
+            }
+        });
+        return list;
     }
 }
