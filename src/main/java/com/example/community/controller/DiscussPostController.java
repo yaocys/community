@@ -1,9 +1,7 @@
 package com.example.community.controller;
 
-import com.example.community.entity.Comment;
-import com.example.community.entity.DiscussPost;
-import com.example.community.entity.Page;
-import com.example.community.entity.User;
+import com.example.community.entity.*;
+import com.example.community.event.EventProducer;
 import com.example.community.service.CommentService;
 import com.example.community.service.DiscussPostService;
 import com.example.community.service.LikeService;
@@ -37,6 +35,8 @@ public class DiscussPostController implements CommunityConstant {
     private CommentService commentService;
     @Autowired
     private LikeService likeService;
+    @Autowired
+    EventProducer eventProducer;
 
     /**
      * 发布帖子
@@ -56,6 +56,16 @@ public class DiscussPostController implements CommunityConstant {
         discussPost.setContent(content);
         discussPost.setCreateTime(new Date());
         discussPostService.addDiscussPost(discussPost);
+
+        /*
+        触发发帖事件
+         */
+        Event event = new Event()
+                .setTopic(TOPIC_PUBLISH)
+                .setUserId(user.getId())
+                .setEntityType(ENTITY_TYPE_POST)
+                .setEntityId(discussPost.getId());
+        eventProducer.fireEvent(event);
 
         // 报错情况以后统一处理
         return CommunityUtil.getJSONString(0,"帖子发布成功！");

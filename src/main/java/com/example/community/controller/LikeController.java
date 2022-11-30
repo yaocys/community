@@ -55,7 +55,9 @@ public class LikeController implements CommunityConstant {
         map.put("likeCount", likeCount);
         map.put("likeStatus", likeStatus);
 
-        // 触发点赞事件
+        /*
+        触发点赞事件，发送消息
+         */
         if (likeStatus == 1) {
             Event event = new Event()
                     .setTopic(TOPIC_LIKE)

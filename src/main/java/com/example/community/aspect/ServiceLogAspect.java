@@ -31,7 +31,10 @@ public class ServiceLogAspect {
         获取request对象进而获取用户的IP
          */
         ServletRequestAttributes attributes = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        assert attributes != null;
+
+        // FIXME 这里只是草草处理了为空的情况
+        if(attributes==null) return;
+
         HttpServletRequest request = attributes.getRequest();
         String IP = request.getRemoteHost();
 
