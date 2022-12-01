@@ -45,4 +45,14 @@ public interface DiscussPostMapper {
      * 更新评论数量
      */
     int updateCommentCount(int id, int commentCount);
+
+    /**
+     * 更新帖子类型（精华帖）
+     */
+    int updatePostType(int id,int type);
+
+    /**
+     * 更新帖子状态（置顶）
+     */
+    int updatePostStatus(int id,int status);
 }

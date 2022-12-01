@@ -39,34 +39,27 @@ public class EventConsumer implements CommunityConstant {
      */
     @KafkaListener(topics = {TOPIC_COMMENT,TOPIC_LIKE,TOPIC_FOLLOW})
     public void handleCommentMessage(ConsumerRecord record){
-        if(record==null||record.value()==null){
-            logger.error("消息内容为空！");
-            return;
+        Event event = checkRecordValid(record);
+        if(event!=null){
+            // 发送站内通知
+            Message message = new Message();
+            message.setFromId(SYSTEM_USER_ID);
+            message.setToId(event.getEntityUserId());
+            // 这里存的不再是会话的ID，而是主题，复用同一张表
+            message.setConversationId(event.getTopic());
+            message.setCreateTime(new Date());
+
+            Map<String,Object> content = new HashMap<>();
+            content.put("userId",event.getUserId());
+            content.put("entityType",event.getEntityType());
+            content.put("entityId",event.getEntityId());
+
+            if(!event.getData().isEmpty())
+                content.putAll(event.getData());
+
+            message.setContent(JSONObject.toJSONString(content));
+            messageService.addMessage(message);
         }
-        Event event = JSONObject.parseObject(record.value().toString(),Event.class);
-        if(event==null){
-            logger.error("消息格式错误！");
-            return;
-        }
-
-        // 发送站内通知
-        Message message = new Message();
-        message.setFromId(SYSTEM_USER_ID);
-        message.setToId(event.getEntityUserId());
-        // 这里存的不再是会话的ID，而是主题，复用同一张表
-        message.setConversationId(event.getTopic());
-        message.setCreateTime(new Date());
-
-        Map<String,Object> content = new HashMap<>();
-        content.put("userId",event.getUserId());
-        content.put("entityType",event.getEntityType());
-        content.put("entityId",event.getEntityId());
-
-        if(!event.getData().isEmpty())
-            content.putAll(event.getData());
-
-        message.setContent(JSONObject.toJSONString(content));
-        messageService.addMessage(message);
     }
 
     /**
@@ -75,17 +68,37 @@ public class EventConsumer implements CommunityConstant {
     @KafkaListener(topics = {TOPIC_PUBLISH})
     public void handlePublishMessage(ConsumerRecord record){
 
+        Event event = checkRecordValid(record);
+        if(event!=null){
+            DiscussPost post = discussPostService.findDiscussPostById(event.getEntityId());
+            elasticSearchService.saveDiscussPost(post);
+        }
+    }
+
+    /**
+     * 消费删帖事件
+     */
+    @KafkaListener(topics = {TOPIC_DELETE})
+    public void handleDeleteMessage(ConsumerRecord record){
+
+        Event event = checkRecordValid(record);
+        if(event!=null) elasticSearchService.deleteDiscussPost(event.getEntityId());
+    }
+
+    /**
+     * 检查消息事件
+     */
+    private Event checkRecordValid(ConsumerRecord record){
         if(record==null || record.value()==null){
             logger.error("消息内容为空");
-            return;
+            return null;
         }
 
         Event event = JSONObject.parseObject(record.value().toString(),Event.class);
         if(event == null){
             logger.error("消息格式错误！");
-            return;
+            return null;
         }
-        DiscussPost post = discussPostService.findDiscussPostById(event.getEntityId());
-        elasticSearchService.saveDiscussPost(post);
+        return event;
     }
 }

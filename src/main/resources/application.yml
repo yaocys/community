@@ -53,6 +53,18 @@ spring:
       cluster-name: myCluster2
       # 9300是TCP端口
       cluster-nodes: 43.139.72.73:9300
+  # 普通线程池
+  task:
+    execution:
+      pool:
+        core-size: 5
+        max-size: 15
+        queue-capacity: 100
+    # 定时任务线程池
+    scheduling:
+      pool:
+        size: 5
+
 
 # 注解开发不需要配置mybatis
 mybatis:

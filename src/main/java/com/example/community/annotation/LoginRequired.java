@@ -8,6 +8,7 @@ import java.lang.annotation.Target;
 /**
  * @author yaosu
  */
+@Deprecated
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface LoginRequired {

@@ -1,5 +1,6 @@
 package com.example.community.config;
 
+import com.example.community.controller.interceptor.DataInterceptor;
 import com.example.community.controller.interceptor.LoginRequiredInterceptor;
 import com.example.community.controller.interceptor.LoginTicketInterceptor;
 import com.example.community.controller.interceptor.MessageInterceptor;
@@ -7,6 +8,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
+
+import javax.xml.crypto.Data;
 
 /**
  * 配置请求拦截
@@ -22,6 +25,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
     @Autowired
     private MessageInterceptor messageInterceptor;
 
+    @Autowired
+    private DataInterceptor dataInterceptor;
+
     /**
      * 注册拦截器并排除静态资源请求
      */
@@ -34,6 +40,9 @@ public class WebMvcConfig implements WebMvcConfigurer {
 //                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
 
         registry.addInterceptor(messageInterceptor)
+                .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
+
+        registry.addInterceptor(dataInterceptor)
                 .excludePathPatterns("/**/*.css", "/**/*.js", "/**/*.png", "/**/*.jpg", "/**/*.jpeg");
     }
 
