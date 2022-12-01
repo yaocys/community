@@ -56,8 +56,8 @@ public class DiscussPostService {
      * 可以在mybatis时关联，也可以分开
      * 这里分开是为了后面Redis缓存方便
      */
-    public List<DiscussPost> findDiscussPosts(int userId,int offset,int limit){
-        return discussPostMapper.selectDiscussPosts(userId, offset, limit);
+    public List<DiscussPost> findDiscussPosts(int userId,int offset,int limit,int orderMode){
+        return discussPostMapper.selectDiscussPosts(userId, offset, limit,orderMode);
     }
 
     /**
@@ -98,5 +98,9 @@ public class DiscussPostService {
 
     public int updatePostStatus(int id,int status){
         return discussPostMapper.updatePostStatus(id,status);
+    }
+
+    public int updateScore(int id, double score) {
+        return discussPostMapper.updateScore(id, score);
     }
 }

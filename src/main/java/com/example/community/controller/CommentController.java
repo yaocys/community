@@ -9,7 +9,6 @@ import com.example.community.service.DiscussPostService;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.HostHolder;
 import com.example.community.util.RedisKeyUtil;
-import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;

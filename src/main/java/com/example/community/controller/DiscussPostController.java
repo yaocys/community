@@ -9,7 +9,9 @@ import com.example.community.service.UserService;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
 import com.example.community.util.HostHolder;
+import com.example.community.util.RedisKeyUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -34,6 +36,8 @@ public class DiscussPostController implements CommunityConstant {
     private LikeService likeService;
     @Autowired
     EventProducer eventProducer;
+    @Autowired
+    RedisTemplate redisTemplate;
 
     /**
      * 发布帖子
@@ -63,6 +67,12 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(discussPost.getId());
         eventProducer.fireEvent(event);
+
+        /*
+        触发将影响帖子分数的事件时，将对应的帖子ID缓存起来，后面定时处理
+         */
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,discussPost.getId());
 
         // 报错情况以后统一处理
         return CommunityUtil.getJSONString(0,"帖子发布成功！");
@@ -194,6 +204,13 @@ public class DiscussPostController implements CommunityConstant {
                 .setEntityType(ENTITY_TYPE_POST)
                 .setEntityId(id);
         eventProducer.fireEvent(event);
+
+        /*
+        触发将影响帖子分数的事件时，将对应的帖子ID缓存起来，后面定时处理
+         */
+        String redisKey = RedisKeyUtil.getPostScoreKey();
+        redisTemplate.opsForSet().add(redisKey,id);
+
         return CommunityUtil.getJSONString(0);
     }
 

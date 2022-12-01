@@ -14,6 +14,7 @@ public interface DiscussPostMapper {
 
     /**
      * 根据id查单个帖子，为”查看帖子详情“功能服务
+     *
      * @param id 这边SQL语句回是动态SQL，有时拼id有时不拼
      * @return 返回一个帖子对象
      */
@@ -21,12 +22,13 @@ public interface DiscussPostMapper {
 
     /**
      * 分页查询
+     *
      * @param userId 用户ID，为个人主页的帖子列表服务，如果没有则是查询首页
      * @param offset 页偏移
-     * @param limit 数量
+     * @param limit  数量
      * @return 返回帖子DiscussPost集合list
      */
-    List<DiscussPost> selectDiscussPosts(int userId,int offset,int limit);
+    List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit,int orderMode);
 
     /**
      * 查询列子行数
@@ -37,6 +39,7 @@ public interface DiscussPostMapper {
 
     /**
      * 增加帖子
+     *
      * @param discussPost 一个帖子对象
      */
     int insertDiscussPost(DiscussPost discussPost);
@@ -49,10 +52,15 @@ public interface DiscussPostMapper {
     /**
      * 更新帖子类型（精华帖）
      */
-    int updatePostType(int id,int type);
+    int updatePostType(int id, int type);
 
     /**
      * 更新帖子状态（置顶）
      */
-    int updatePostStatus(int id,int status);
+    int updatePostStatus(int id, int status);
+
+    /**
+     * 更新帖子分数
+     */
+    int updateScore(int id, double score);
 }

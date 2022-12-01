@@ -64,6 +64,23 @@ spring:
     scheduling:
       pool:
         size: 5
+  # quartz
+  quartz:
+    job-store-type: jdbc
+    scheduler-name: communityScheduler
+    properties:
+      org:
+        quartz:
+          scheduler:
+            instanceId: AUTO
+          jobStore:
+            class: org.springframework.scheduling.quartz.LocalDataSourceJobStore
+            driverDelegateClass: org.quartz.impl.jdbcjobstore.StdJDBCDelegate
+            isClustered: true
+          threadPool:
+            class: org.quartz.simpl.SimpleThreadPool
+            threadCount: 5
+
 
 
 # 注解开发不需要配置mybatis
@@ -80,3 +97,12 @@ caffeine:
   posts:
     max-size: 15
     expire-seconds: 180
+
+qiniu:
+  key:
+    access: q9NbbPV-TtgahQDOhCAjLHxNd-i6ocA3OP1CyNaV
+    secret: jf1LSt5YD6N_ZmIyYO9-JUvE0hQ9tIkYlgtE1kvn
+  bucket:
+    header:
+      name: community-user-header2url
+      url: yaos.cc

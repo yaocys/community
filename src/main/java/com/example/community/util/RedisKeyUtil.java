@@ -118,6 +118,7 @@ public class RedisKeyUtil {
 
     /**
      * 帖子分数 key
+     * 同一时刻只会有一份缓存队列（set），所以返回的都是同一个key，不需要参数
      */
     public static String getPostScoreKey() {
         return PREFIX_POST + SPLIT + "score";
