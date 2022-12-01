@@ -3,8 +3,11 @@ package com.example.community.service;
 import com.example.community.dao.DiscussPostMapper;
 import com.example.community.entity.DiscussPost;
 import com.example.community.util.SensitiveFilter;
+import com.github.benmanes.caffeine.cache.CacheLoader;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.ibatis.annotations.Mapper;
+import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,6 +18,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 /**
  * @author yao 2022/4/13
@@ -48,7 +52,43 @@ public class DiscussPostService {
      */
     @PostConstruct
     public void init(){
-        //
+        /*
+        初始化帖子列表
+         */
+/*        postListCache = Caffeine.newBuilder()
+                .maximumSize(maxSize)
+                .expireAfterWrite(expireSecond, TimeUnit.SECONDS)
+                .build(new CacheLoader<>() {
+                    @Override
+                    public @Nullable List<DiscussPost> load(String key) throws Exception {
+                        if(key==null||key.length()==0)
+                            throw new IllegalArgumentException("参数错误");
+                        String[] params = key.split(":");
+                        if(params!=null || params.length!=2)
+                            throw new IllegalArgumentException("参数错误");
+
+                        int offset = Integer.parseInt(params[0]);
+                        int limit = Integer.parseInt(params[1]);
+
+                        // TODO 这个位置可以再加一个Redis的二级缓存
+
+                        logger.debug("load post list from DB.");
+                        return discussPostMapper.selectDiscussPosts(0,offset,limit,1);
+                    }
+                });
+        *//*
+        初始化帖子数量缓存
+         *//*
+        postRowsCache = Caffeine.newBuilder()
+                .maximumSize(maxSize)
+                .expireAfterWrite(expireSecond,TimeUnit.SECONDS)
+                .build(new CacheLoader<>() {
+                    @Override
+                    public @Nullable Integer load(Integer key) {
+                        logger.debug("load post list from DB.");
+                        return discussPostMapper.selectDiscussPostRows(key);
+                    }
+                });*/
     }
 
     /**
@@ -57,6 +97,8 @@ public class DiscussPostService {
      * 这里分开是为了后面Redis缓存方便
      */
     public List<DiscussPost> findDiscussPosts(int userId,int offset,int limit,int orderMode){
+        // if(userId==0&&orderMode==1) return postListCache.get(offset+":"+limit);
+        logger.debug("load post list from DB.");
         return discussPostMapper.selectDiscussPosts(userId, offset, limit,orderMode);
     }
 
@@ -64,6 +106,7 @@ public class DiscussPostService {
      * 返回帖子总行数
      */
     public int findDiscussPostRows(int userId){
+        // if(userId==0) return postRowsCache.get(userId);
         return discussPostMapper.selectDiscussPostRows(userId);
     }
 
