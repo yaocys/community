@@ -7,6 +7,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 /**
  * @author yao 2022/4/12
  */
+@Deprecated
 @Controller
 @RequestMapping("/demo")
 public class HelloDemo {

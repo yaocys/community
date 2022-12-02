@@ -58,6 +58,7 @@ public class HomeController implements CommunityConstant {
         // 准备一个嵌套了map的list
         List<Map<String, Object>> discussPosts = new ArrayList<>();
         // 根据每个帖子对象去查询查相应的用户信息，并将这两个对象封装成一个map放到list集合中
+
         // TODO 还是觉得直接在mapper层组合这两个对象好，这样遍历封装感觉性能差且麻烦，如果都是同一个对象发的帖子呢？
         if (list != null) {
             for (DiscussPost post : list) {

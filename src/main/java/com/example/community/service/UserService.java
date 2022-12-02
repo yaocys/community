@@ -116,7 +116,7 @@ public class UserService implements CommunityConstant {
         // http://localhost:8080/community/activation/101/code
         String url = domain + contextPath + "/activation/" + user.getId() + "/" + user.getActivationCode();
         context.setVariable("url", url);
-        // 生成html格式地内容
+        // 生成html格式的内容
         String content = templateEngine.process("/mail/activation", context);
         // 发送邮件
         mailClient.sendMail(user.getEmail(), "激活账号", content);
@@ -237,7 +237,6 @@ public class UserService implements CommunityConstant {
     /**
      * 当缓存中查不到值的时候去查数据库
      * 并初始化缓存
-     *
      * @return 用户对象，用户信息
      */
     private User initCache(int userId) {

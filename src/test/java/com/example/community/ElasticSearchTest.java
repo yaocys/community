@@ -59,7 +59,7 @@ public class ElasticSearchTest {
 
     @Test
     public void initDataForTest() {
-        for (int i = 0; i < 300000; i++) {
+        for (int i = 0; i < 170000; i++) {
             DiscussPost post = new DiscussPost();
             post.setUserId(111);
             post.setTitle("大数据量测试样例数据");

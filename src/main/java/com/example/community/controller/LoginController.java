@@ -174,7 +174,7 @@ public class LoginController implements CommunityConstant {
         /*
         判断验证码
          */
-        String kaptcha = null;
+        String kaptcha;
         if(StringUtils.isNotBlank(kaptchaOwner)){
             String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
             kaptcha = (String) redisTemplate.opsForValue().get(redisKey);

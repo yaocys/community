@@ -98,6 +98,13 @@ caffeine:
     max-size: 15
     expire-seconds: 180
 
+management:
+  endpoints:
+    web:
+      exposure:
+        include:
+        exclude:
+
 qiniu:
   key:
     access: q9NbbPV-TtgahQDOhCAjLHxNd-i6ocA3OP1CyNaV
