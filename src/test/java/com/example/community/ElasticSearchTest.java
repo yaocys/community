@@ -59,7 +59,7 @@ public class ElasticSearchTest {
 
     @Test
     public void initDataForTest() {
-        for (int i = 0; i < 170000; i++) {
+        for (int i = 0; i < 40000; i++) {
             DiscussPost post = new DiscussPost();
             post.setUserId(111);
             post.setTitle("大数据量测试样例数据");
@@ -68,5 +68,13 @@ public class ElasticSearchTest {
             post.setScore(Math.random() * 2000);
             discussPostService.addDiscussPost(post);
         }
+    }
+
+    @Test
+    public void testCache(){
+        System.out.println(discussPostService.findDiscussPosts(0,0,10,1));
+        System.out.println(discussPostService.findDiscussPosts(0,0,10,1));
+        System.out.println(discussPostService.findDiscussPosts(0,0,10,1));
+        System.out.println(discussPostService.findDiscussPosts(0,0,10,0));
     }
 }

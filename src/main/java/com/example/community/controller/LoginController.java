@@ -153,7 +153,6 @@ public class LoginController implements CommunityConstant {
         } catch (IOException e) {
             logger.error("响应验证码失败" + e.getMessage());
         }
-
     }
 
     /**

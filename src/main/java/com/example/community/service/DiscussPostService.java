@@ -7,6 +7,7 @@ import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import org.apache.ibatis.annotations.Mapper;
+import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -40,31 +41,33 @@ public class DiscussPostService {
     /**
      * 帖子列表缓存
      */
-    private LoadingCache<String ,List<DiscussPost>> postListCache;
+    private LoadingCache<String, List<DiscussPost>> postListCache;
 
     /**
      * 帖子总数缓存
      */
-    private LoadingCache<Integer,Integer> postRowsCache;
+    private LoadingCache<Integer, Integer> postRowsCache;
 
     /**
      * 初始化帖子列表缓存和帖子总数缓存
+     * 只缓存了首页的热门帖子列表
      */
     @PostConstruct
-    public void init(){
+    public void init() {
         /*
         初始化帖子列表
          */
-/*        postListCache = Caffeine.newBuilder()
+        postListCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
                 .expireAfterWrite(expireSecond, TimeUnit.SECONDS)
                 .build(new CacheLoader<>() {
                     @Override
-                    public @Nullable List<DiscussPost> load(String key) throws Exception {
-                        if(key==null||key.length()==0)
+                    @Nullable
+                    public List<DiscussPost> load(@NonNull String key) {
+                        if (key == null || key.length() == 0)
                             throw new IllegalArgumentException("参数错误");
                         String[] params = key.split(":");
-                        if(params!=null || params.length!=2)
+                        if (params == null || params.length != 2)
                             throw new IllegalArgumentException("参数错误");
 
                         int offset = Integer.parseInt(params[0]);
@@ -72,23 +75,21 @@ public class DiscussPostService {
 
                         // TODO 这个位置可以再加一个Redis的二级缓存
 
-                        logger.debug("load post list from DB.");
-                        return discussPostMapper.selectDiscussPosts(0,offset,limit,1);
+                        logger.info("load post list from DB.");
+                        return discussPostMapper.selectDiscussPosts(0, offset, limit, 1);
                     }
                 });
-        *//*
-        初始化帖子数量缓存
-         *//*
+        /*初始化帖子数量缓存*/
         postRowsCache = Caffeine.newBuilder()
                 .maximumSize(maxSize)
-                .expireAfterWrite(expireSecond,TimeUnit.SECONDS)
+                .expireAfterWrite(expireSecond, TimeUnit.SECONDS)
                 .build(new CacheLoader<>() {
                     @Override
                     public @Nullable Integer load(Integer key) {
-                        logger.debug("load post list from DB.");
+                        // logger.error("load post list from DB.");
                         return discussPostMapper.selectDiscussPostRows(key);
                     }
-                });*/
+                });
     }
 
     /**
@@ -96,25 +97,25 @@ public class DiscussPostService {
      * 可以在mybatis时关联，也可以分开
      * 这里分开是为了后面Redis缓存方便
      */
-    public List<DiscussPost> findDiscussPosts(int userId,int offset,int limit,int orderMode){
-        // if(userId==0&&orderMode==1) return postListCache.get(offset+":"+limit);
-        logger.debug("load post list from DB.");
-        return discussPostMapper.selectDiscussPosts(userId, offset, limit,orderMode);
+    public List<DiscussPost> findDiscussPosts(int userId, int offset, int limit, int orderMode) {
+        if (userId == 0 && orderMode == 1) return postListCache.get(offset + ":" + limit);
+        // logger.error("load post list from DB.");
+        return discussPostMapper.selectDiscussPosts(userId, offset, limit, orderMode);
     }
 
     /**
      * 返回帖子总行数
      */
-    public int findDiscussPostRows(int userId){
-        // if(userId==0) return postRowsCache.get(userId);
+    public int findDiscussPostRows(int userId) {
+        if (userId == 0) return postRowsCache.get(userId);
         return discussPostMapper.selectDiscussPostRows(userId);
     }
 
     /**
      * 新增帖子会对帖子标题和内容进行过滤和转义
      */
-    public int addDiscussPost(DiscussPost discussPost){
-        if (discussPost==null){
+    public int addDiscussPost(DiscussPost discussPost) {
+        if (discussPost == null) {
             throw new IllegalArgumentException("帖子参数不能为空！");
         }
         // 转义HTML标记
@@ -127,7 +128,7 @@ public class DiscussPostService {
         return discussPostMapper.insertDiscussPost(discussPost);
     }
 
-    public DiscussPost findDiscussPostById(int id){
+    public DiscussPost findDiscussPostById(int id) {
         return discussPostMapper.selectDiscussPostById(id);
     }
 
@@ -135,12 +136,12 @@ public class DiscussPostService {
         return discussPostMapper.updateCommentCount(id, commentCount);
     }
 
-    public int updatePostType(int id,int type){
+    public int updatePostType(int id, int type) {
         return discussPostMapper.updatePostType(id, type);
     }
 
-    public int updatePostStatus(int id,int status){
-        return discussPostMapper.updatePostStatus(id,status);
+    public int updatePostStatus(int id, int status) {
+        return discussPostMapper.updatePostStatus(id, status);
     }
 
     public int updateScore(int id, double score) {

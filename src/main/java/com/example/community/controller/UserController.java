@@ -83,7 +83,7 @@ public class UserController implements CommunityConstant {
         // 生成随机文件名
         fileName = CommunityUtil.generateUUID()+suffix;
 
-        // 确定文件存放路径
+        // 确定文件存放路径，保存文件
         File dest = new File(uploadPath+"/"+fileName);
         try {
             headerImage.transferTo(dest);

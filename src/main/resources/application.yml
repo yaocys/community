@@ -15,7 +15,7 @@ spring:
     # 数据库连接池
     type: com.zaxxer.hikari.HikariDataSource
     hikari:
-      maximum-pool-size: 15
+      maximum-pool-size: 60
       minimum-idle: 5
       idle-timeout: 30000
   # Mail
