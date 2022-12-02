@@ -10,11 +10,11 @@ function publish() {
     /*
     发送异步请求前将CSRF令牌设置到请求的请求头中
      */
-    const token = $("meta[name='_csrf']").attr("content");
-    const header = $("meta[name='_csrf_header']").attr("content");
-    $(document).ajaxSend(function (e, xhr, options) {
+    // const token = $("meta[name='_csrf']").attr("content");
+    // const header = $("meta[name='_csrf_header']").attr("content");
+/*    $(document).ajaxSend(function (e, xhr, options) {
         xhr.setRequestHeader(header, token);
-    });
+    });*/
 
     // 获取标题和内容
     const title = $("#recipient-name").val();

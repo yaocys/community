@@ -40,7 +40,7 @@ public class DataController {
         model.addAttribute("uvStartDate",start);
         model.addAttribute("uvEndDate",end);
         // 转发过去仍然是同一个请求，post请求
-        return "forward::/data";
+        return "forward:/data";
     }
 
     /**
@@ -54,6 +54,6 @@ public class DataController {
         model.addAttribute("dauStartDate",start);
         model.addAttribute("dauEndDate",end);
         // 转发过去仍然是同一个请求，post请求
-        return "forward::/data";
+        return "forward:/data";
     }
 }
