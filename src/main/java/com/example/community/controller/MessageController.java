@@ -9,6 +9,8 @@ import com.example.community.service.UserService;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
 import com.example.community.util.HostHolder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -20,6 +22,7 @@ import java.util.*;
 /**
  * @author yaosu
  */
+@Api(tags = "私信API")
 @Controller
 public class MessageController implements CommunityConstant {
 
@@ -35,6 +38,7 @@ public class MessageController implements CommunityConstant {
     /**
      * 私信列表
      */
+    @ApiOperation("私信列表")
     @GetMapping("/letter/list")
     public String getLetterList(Model model, Page page) {
         User user = hostHolder.getUser();
@@ -73,8 +77,9 @@ public class MessageController implements CommunityConstant {
 
 
     /**
-     * 帖子详情
+     * 私信详情
      */
+    @ApiOperation("私信详情")
     @GetMapping("/letter/detail/{conversationId}")
     public String getLetterDetail(@PathVariable("conversationId") String conversationId, Page page, Model model) {
         // 分页信息
@@ -109,6 +114,7 @@ public class MessageController implements CommunityConstant {
 
     /**
      * 拆分conversationId，查询目标用户
+     *
      * @return 目标User
      */
     private User getLetterTarget(String conversationId) {
@@ -143,9 +149,11 @@ public class MessageController implements CommunityConstant {
 
     /**
      * 发送私信
+     *
      * @param toName  接收用户的用户名
      * @param content 私信内容
      */
+    @ApiOperation("发送私信")
     @PostMapping("/letter/send")
     @ResponseBody
     public String sendLetter(String toName, String content) {
@@ -169,8 +177,9 @@ public class MessageController implements CommunityConstant {
         return CommunityUtil.getJSONString(0);
     }
 
+    @ApiOperation("系统消息列表")
     @GetMapping("/notice/list")
-    public String getNoticeList(Model model){
+    public String getNoticeList(Model model) {
         User user = hostHolder.getUser();
 
         // 查询评论类通知
@@ -253,8 +262,9 @@ public class MessageController implements CommunityConstant {
     /**
      * 分页查询系统通知详情列表
      */
+    @ApiOperation("分页查询系统通知详情列表")
     @GetMapping("/notice/detail/{topic}")
-    public String getNoticeDetail(@PathVariable("topic") String topic,Page page,Model model){
+    public String getNoticeDetail(@PathVariable("topic") String topic, Page page, Model model) {
         User user = hostHolder.getUser();
 
         page.setLimit(5);

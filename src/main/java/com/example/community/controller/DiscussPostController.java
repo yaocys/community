@@ -10,6 +10,8 @@ import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
 import com.example.community.util.HostHolder;
 import com.example.community.util.RedisKeyUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -21,6 +23,7 @@ import java.util.*;
 /**
  * @author yao 2022/5/8
  */
+@Api(tags = "帖子操作API")
 @Controller
 @RequestMapping("/discuss")
 public class DiscussPostController implements CommunityConstant {
@@ -41,16 +44,18 @@ public class DiscussPostController implements CommunityConstant {
 
     /**
      * 发布帖子
-     * @param title 标题
+     *
+     * @param title   标题
      * @param content 内容
      * @return JSON格式相应消息
      */
-    @RequestMapping(path = "/add",method = RequestMethod.POST)
+    @ApiOperation(value = "新增（发布）帖子", notes = "详细说明", httpMethod = "POST")
+    @PostMapping(path = "/add")
     @ResponseBody
-    public String addDiscussPost(String title,String content){
+    public String addDiscussPost(String title, String content) {
         // TODO 为什么这里手动检查用户是否登录而不是加上自定义注解
         User user = hostHolder.getUser();
-        if (user==null) return CommunityUtil.getJSONString(403,"用户未登录！");
+        if (user == null) return CommunityUtil.getJSONString(403, "用户未登录！");
         DiscussPost discussPost = new DiscussPost();
         discussPost.setUserId(user.getId());
         discussPost.setTitle(title);
@@ -72,18 +77,20 @@ public class DiscussPostController implements CommunityConstant {
         触发将影响帖子分数的事件时，将对应的帖子ID缓存起来，后面定时处理
          */
         String redisKey = RedisKeyUtil.getPostScoreKey();
-        redisTemplate.opsForSet().add(redisKey,discussPost.getId());
+        redisTemplate.opsForSet().add(redisKey, discussPost.getId());
 
         // 报错情况以后统一处理
-        return CommunityUtil.getJSONString(0,"帖子发布成功！");
+        return CommunityUtil.getJSONString(0, "帖子发布成功！");
     }
 
     /**
      * 显示帖子详情
      * 注意这里面所有的用户点赞状态都是当前用户的点赞状态
+     *
      * @param discussPostId 帖子ID
      */
-    @RequestMapping(path = "/detail/{discussPostId}", method = RequestMethod.GET)
+    @ApiOperation("显示帖子详情")
+    @GetMapping(path = "/detail/{discussPostId}")
     public String getDiscussPost(@PathVariable("discussPostId") int discussPostId, Model model, Page page) {
         // TODO 这里其实可以用MyBatis关联查询，效率高但是有耦合
         DiscussPost post = discussPostService.findDiscussPostById(discussPostId);
@@ -92,13 +99,13 @@ public class DiscussPostController implements CommunityConstant {
         User user = userService.findUserById(post.getUserId());
         model.addAttribute("user", user);
 
-        long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST,discussPostId);
-        model.addAttribute("likeCount",likeCount);
+        long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, discussPostId);
+        model.addAttribute("likeCount", likeCount);
 
         // 点赞状态，如果用户未登录的话则显示为空
-        int likeStatus = hostHolder.getUser()==null?0:
-                likeService.findEntityLikeStatus(hostHolder.getUser().getId(),ENTITY_TYPE_POST,discussPostId);
-        model.addAttribute("likeStatus",likeStatus);
+        int likeStatus = hostHolder.getUser() == null ? 0 :
+                likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, discussPostId);
+        model.addAttribute("likeStatus", likeStatus);
 
         // 设置评论分页信息
         page.setLimit(5);
@@ -122,8 +129,8 @@ public class DiscussPostController implements CommunityConstant {
                 commentVo.put("user", userService.findUserById(comment.getUserId()));
 
                 // 这里的likeCount和likeStatus复用了上面的变量
-                likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT,comment.getId());
-                commentVo.put("likeCount",likeCount);
+                likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_COMMENT, comment.getId());
+                commentVo.put("likeCount", likeCount);
 
                 likeStatus = hostHolder.getUser() == null ? 0 :
                         likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_COMMENT, comment.getId());
@@ -176,10 +183,11 @@ public class DiscussPostController implements CommunityConstant {
     /**
      * 异步，帖子置顶操作
      */
+    @ApiOperation("异步（消息），帖子置顶操作")
     @PostMapping("/top")
     @ResponseBody
-    public String setTop(int id){
-        discussPostService.updatePostType(id,1);
+    public String setTop(int id) {
+        discussPostService.updatePostType(id, 1);
         // 同步到ES
         Event event = new Event()
                 .setTopic(TOPIC_PUBLISH)
@@ -193,10 +201,11 @@ public class DiscussPostController implements CommunityConstant {
     /**
      * 加精，帖子指定操作
      */
+    @ApiOperation("异步（消息），帖子加精操作")
     @PostMapping("/wonderful")
     @ResponseBody
-    public String setWonderful(int id){
-        discussPostService.updatePostStatus(id,1);
+    public String setWonderful(int id) {
+        discussPostService.updatePostStatus(id, 1);
         // 同步到ES
         Event event = new Event()
                 .setTopic(TOPIC_PUBLISH)
@@ -209,7 +218,7 @@ public class DiscussPostController implements CommunityConstant {
         触发将影响帖子分数的事件时，将对应的帖子ID缓存起来，后面定时处理
          */
         String redisKey = RedisKeyUtil.getPostScoreKey();
-        redisTemplate.opsForSet().add(redisKey,id);
+        redisTemplate.opsForSet().add(redisKey, id);
 
         return CommunityUtil.getJSONString(0);
     }
@@ -217,10 +226,11 @@ public class DiscussPostController implements CommunityConstant {
     /**
      * 删除，帖子指定操作
      */
+    @ApiOperation("异步，帖子删除操作")
     @PostMapping("/delete")
     @ResponseBody
-    public String setDelete(int id){
-        discussPostService.updatePostStatus(id,2);
+    public String setDelete(int id) {
+        discussPostService.updatePostStatus(id, 2);
         // 触发删帖事件
         Event event = new Event()
                 .setTopic(TOPIC_DELETE)

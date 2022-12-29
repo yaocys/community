@@ -1,6 +1,8 @@
 package com.example.community.controller;
 
 import com.example.community.service.DataService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.stereotype.Controller;
@@ -15,6 +17,7 @@ import java.util.Date;
  * 处理统计网站数据的请求
  * @author yao 2022/12/1
  */
+@Api(tags = "网站数据统计API")
 @Controller
 public class DataController {
     @Autowired
@@ -24,6 +27,7 @@ public class DataController {
      * 展示统计页面
      * @return 模板路径
      */
+    @ApiOperation("展示统计页面")
     @RequestMapping(path = "/data",method = {RequestMethod.GET,RequestMethod.POST})
     public String getDataPage(){
         return "/site/admin/data";
@@ -32,6 +36,7 @@ public class DataController {
     /**
      * 统计时间段内的UV
      */
+    @ApiOperation("统计UV")
     @PostMapping("/data/uv")
     public String getUV(@DateTimeFormat(pattern = "yyyy-MM-dd") Date start
             , @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, Model model){
@@ -46,6 +51,7 @@ public class DataController {
     /**
      * 统计时间段内的DAU
      */
+    @ApiOperation("统计DAU")
     @PostMapping("/data/dau")
     public String getDAU(@DateTimeFormat(pattern = "yyyy-MM-dd") Date start
             , @DateTimeFormat(pattern = "yyyy-MM-dd") Date end, Model model){

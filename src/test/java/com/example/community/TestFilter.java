@@ -18,7 +18,7 @@ public class  TestFilter{
     @Test
     public void tests(){
 
-        String ss = "尽情嫖娼？？！开票";
+        String ss = "尽情嫖娼？？！开票测试过滤器";
         System.out.println(sensitiveFilter.filter(ss));
     }
 }

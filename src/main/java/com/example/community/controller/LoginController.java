@@ -6,6 +6,8 @@ import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
 import com.example.community.util.RedisKeyUtil;
 import com.google.code.kaptcha.Producer;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,10 +17,7 @@ import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.*;
 
 import javax.imageio.ImageIO;
 import javax.servlet.http.Cookie;
@@ -33,6 +32,7 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author yaosu
  */
+@Api(tags = "登录相关API")
 @Controller
 public class LoginController implements CommunityConstant {
 
@@ -54,12 +54,14 @@ public class LoginController implements CommunityConstant {
     /**
      * 返回注册页面
      */
-    @RequestMapping(path = "/register", method = RequestMethod.GET)
+    @ApiOperation("注册页面")
+    @GetMapping(path = "/register")
     public String getRegisterPage() {
         return "/site/register";
     }
 
-    @RequestMapping(path = "/login", method = RequestMethod.GET)
+    @ApiOperation("登录页面")
+    @GetMapping(path = "/login")
     public String getLoginPage() {
         return "/site/login";
     }
@@ -69,7 +71,8 @@ public class LoginController implements CommunityConstant {
      *
      * @param user 要注册的用户对象
      */
-    @RequestMapping(path = "/register", method = RequestMethod.POST)
+    @ApiOperation("注册")
+    @PostMapping(path = "/register")
     public String register(Model model, User user) {
         Map<String, Object> map = userService.register(user);
         if (map == null || map.isEmpty()) {
@@ -93,7 +96,8 @@ public class LoginController implements CommunityConstant {
      * @param userId 用户ID
      * @param code   激活码
      */
-    @RequestMapping(path = "/activation/{userId}/{code}", method = RequestMethod.GET)
+    @ApiOperation("注册账号激活")
+    @GetMapping(path = "/activation/{userId}/{code}")
     public String activation(Model model, @PathVariable("userId") int userId, @PathVariable("code") String code) {
         int result = userService.activation(userId, code);
         if (result == ACTIVATION_SUCCESS) {
@@ -112,6 +116,7 @@ public class LoginController implements CommunityConstant {
     /**
      * 生成验证码图片
      */
+    @ApiOperation("生成验证码图片")
     @RequestMapping(path = "/kaptcha", method = RequestMethod.GET)
     public void getKaptcha(HttpServletResponse response/*, HttpSession session*/) {
         // 获取四位字符串
@@ -166,18 +171,19 @@ public class LoginController implements CommunityConstant {
      * @param model      存视图数据
      * @param response   返回验证码图片
      */
+    @ApiOperation("登录")
     @RequestMapping(path = "/login", method = RequestMethod.POST)
     public String login(String username, String password, String code, boolean rememberme,
                         Model model/*, HttpSession session*/, HttpServletResponse response,
-                        @CookieValue(value = "kaptchaOwner",required = false) String kaptchaOwner) {
+                        @CookieValue(value = "kaptchaOwner", required = false) String kaptchaOwner) {
         /*
         判断验证码
          */
         String kaptcha;
-        if(StringUtils.isNotBlank(kaptchaOwner)){
+        if (StringUtils.isNotBlank(kaptchaOwner)) {
             String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
             kaptcha = (String) redisTemplate.opsForValue().get(redisKey);
-        }else{
+        } else {
             model.addAttribute("codeMsg", "验证码已过期，请重新刷新验证码");
             return "/site/login";
         }
@@ -213,6 +219,7 @@ public class LoginController implements CommunityConstant {
     /**
      * 注意这里也是重定向刷新页面
      */
+    @ApiOperation("注销")
     @RequestMapping(path = "/logout", method = RequestMethod.GET)
     public String logout(@CookieValue("ticket") String ticket) {
         userService.logout(ticket);

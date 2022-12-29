@@ -9,6 +9,8 @@ import com.example.community.service.DiscussPostService;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.HostHolder;
 import com.example.community.util.RedisKeyUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Controller;
@@ -18,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Date;
 
+@Api(tags = "评论API")
 @Controller
 @RequestMapping("/comment")
 public class CommentController implements CommunityConstant {
@@ -36,6 +39,7 @@ public class CommentController implements CommunityConstant {
     @Autowired
     private RedisTemplate redisTemplate;
 
+    @ApiOperation("添加评论，对象可能是帖子、评论、回复")
     @PostMapping("/add/{discussPostId}")
     public String addComment(@PathVariable("discussPostId") int discussPostId, Comment comment) {
         comment.setUserId(hostHolder.getUser().getId());
@@ -52,13 +56,13 @@ public class CommentController implements CommunityConstant {
                 .setUserId(hostHolder.getUser().getId())
                 .setEntityType(comment.getEntityType())
                 .setEntityId(comment.getEntityId())
-                .setData("postId",discussPostId);
+                .setData("postId", discussPostId);
 
         // 根据不同的实体对象类型查并设置EntityUserId
-        if(comment.getEntityType()==ENTITY_TYPE_POST){
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
             DiscussPost target = discussPostService.findDiscussPostById(comment.getEntityId());
             event.setEntityUserId(target.getUserId());
-        }else if(comment.getEntityType()==ENTITY_TYPE_COMMENT){
+        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
             Comment target = commentService.findCommentById(comment.getEntityId());
             event.setEntityUserId(target.getUserId());
         }

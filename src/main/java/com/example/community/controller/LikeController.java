@@ -8,6 +8,8 @@ import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
 import com.example.community.util.HostHolder;
 import com.example.community.util.RedisKeyUtil;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.checkerframework.checker.units.qual.A;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
@@ -21,6 +23,7 @@ import java.util.Map;
 /**
  * @author yao 2022/6/16
  */
+@Api(tags = "点赞操作API")
 @Controller
 public class LikeController implements CommunityConstant {
     @Autowired
@@ -36,20 +39,22 @@ public class LikeController implements CommunityConstant {
 
     /**
      * 点赞接口
+     *
      * @param entityType 点赞的目标实体类型
-     * @param entityId 点赞目标实体类型的ID
+     * @param entityId   点赞目标实体类型的ID
      */
+    @ApiOperation("给某个实体点赞，点两下取消")
     @PostMapping("/like")
     @ResponseBody
-    public String like(int entityType,int entityId,int entityAuthorId,int postId){
+    public String like(int entityType, int entityId, int entityAuthorId, int postId) {
         // TODO 这里后面会用权限管理框架统一处理
         User user = hostHolder.getUser();
 
-        likeService.like(user.getId(), entityType,entityId,entityAuthorId);
+        likeService.like(user.getId(), entityType, entityId, entityAuthorId);
 
         long likeCount = likeService.findEntityLikeCount(entityType, entityId);
 
-        int likeStatus= likeService.findEntityLikeStatus(user.getId(), entityType,entityId);
+        int likeStatus = likeService.findEntityLikeStatus(user.getId(), entityType, entityId);
 
         Map<String, Object> map = new HashMap<>();
         map.put("likeCount", likeCount);
@@ -69,8 +74,10 @@ public class LikeController implements CommunityConstant {
             eventProducer.fireEvent(event);
         }
 
-        if(entityType == ENTITY_TYPE_POST) {
-            // 计算帖子分数
+        if (entityType == ENTITY_TYPE_POST) {
+            /*
+            将贴子ID添加到变更帖子列表，后面定时更新
+             */
             String redisKey = RedisKeyUtil.getPostScoreKey();
             redisTemplate.opsForSet().add(redisKey, postId);
         }

@@ -50,7 +50,7 @@ public class PostScoreRefreshJob implements Job, CommunityConstant {
     }
 
     @Override
-    public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
+    public void execute(JobExecutionContext jobExecutionContext) {
         String redisKey = RedisKeyUtil.getPostScoreKey();
         BoundSetOperations operations = redisTemplate.boundSetOps(redisKey);
 

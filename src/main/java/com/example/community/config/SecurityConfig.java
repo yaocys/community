@@ -18,7 +18,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
 
 
     @Override
-    public void configure(WebSecurity web) throws Exception {
+    public void configure(WebSecurity web) {
         // 忽略对静态资源的权限检查
         web.ignoring().antMatchers("/resources/**");
     }

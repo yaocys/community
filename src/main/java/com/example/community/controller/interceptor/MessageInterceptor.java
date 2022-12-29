@@ -12,6 +12,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 /**
+ * 处理各页面顶栏上的消息气泡数量
  * @author yao 2022/11/29
  */
 @Component

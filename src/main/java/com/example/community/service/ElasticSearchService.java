@@ -15,7 +15,6 @@ import org.elasticsearch.search.fetch.subphase.highlight.HighlightField;
 import org.elasticsearch.search.sort.SortBuilders;
 import org.elasticsearch.search.sort.SortOrder;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import com.example.community.entity.SearchResult;
@@ -48,6 +47,9 @@ public class ElasticSearchService {
         discussPostRepository.deleteById(id);
     }
 
+    /**
+     * 搜索帖子并高亮关键词
+     */
     public SearchResult searchDiscussPost(String keyword,int offset,int limit) throws IOException {
         // 指定搜索请求的索引名，即表名
         SearchRequest searchRequest = new SearchRequest("discusspost");

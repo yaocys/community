@@ -80,8 +80,14 @@ spring:
           threadPool:
             class: org.quartz.simpl.SimpleThreadPool
             threadCount: 5
+  # 解决Swagger3.0与SpringBoot2.6.x的路径兼容问题
+  mvc:
+    pathmatch:
+      matching-strategy: ant_path_matcher
 
-
+# 增强Swagger的接口文档
+knife4j:
+  enable: true
 
 # 注解开发不需要配置mybatis
 mybatis:

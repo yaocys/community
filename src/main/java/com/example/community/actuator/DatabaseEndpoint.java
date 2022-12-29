@@ -1,4 +1,4 @@
-package com.example.community;
+package com.example.community.actuator;
 
 import com.example.community.util.CommunityUtil;
 import org.slf4j.Logger;
@@ -16,7 +16,7 @@ import java.sql.SQLException;
  * @author yao 2022/12/1
  */
 @Component
-@Endpoint(id = "database")
+@Endpoint(id = "myDatabase")
 public class DatabaseEndpoint {
 
     private static final Logger logger = LoggerFactory.getLogger(DatabaseEndpoint.class);
@@ -25,14 +25,14 @@ public class DatabaseEndpoint {
     private DataSource dataSource;
 
     @ReadOperation
-    public String checkConnection(){
-        try(
+    public String checkConnection() {
+        try (
                 Connection ignored = dataSource.getConnection();
-                ) {
-            return CommunityUtil.getJSONString(0,"获取数据库连接成功！");
+        ) {
+            return CommunityUtil.getJSONString(0, "获取数据库连接成功！");
         } catch (SQLException e) {
-            logger.error("获取数据库连接失败"+e.getMessage());
-            return CommunityUtil.getJSONString(0,"获取数据库连接失败！");
+            logger.error("获取数据库连接失败" + e.getMessage());
+            return CommunityUtil.getJSONString(0, "获取数据库连接失败！");
         }
     }
 }

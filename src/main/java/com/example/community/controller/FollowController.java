@@ -10,6 +10,8 @@ import com.example.community.service.UserService;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
 import com.example.community.util.HostHolder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -21,6 +23,7 @@ import java.util.Map;
 /**
  * @author yao 2022/11/22
  */
+@Api(tags = "关注操作API")
 @Controller
 public class FollowController implements CommunityConstant {
     @Autowired
@@ -37,6 +40,7 @@ public class FollowController implements CommunityConstant {
     /**
      * 这是一个异步的请求，所以只需要返回数据
      */
+    @ApiOperation("关注某个用户")
     @LoginRequired
     @PostMapping("/follow")
     @ResponseBody
@@ -62,8 +66,9 @@ public class FollowController implements CommunityConstant {
     /**
      * 分开写两个接口主要是为了：关注通知，取关不通知
      */
+    @ApiOperation("取关某个用户")
     @LoginRequired
-    @PostMapping("unfollow")
+    @PostMapping("/unfollow")
     @ResponseBody
     public String unfollow(int entityType, int entityId) {
         User user = hostHolder.getUser();
@@ -76,6 +81,7 @@ public class FollowController implements CommunityConstant {
     /**
      * 查看关注列表
      */
+    @ApiOperation("查看关注列表")
     @LoginRequired
     @GetMapping("/followees/{userId}")
     public String getFollowees(@PathVariable("userId") int userId, Page page, Model model) {
@@ -102,8 +108,9 @@ public class FollowController implements CommunityConstant {
         return "/site/followee";
     }
 
+    @ApiOperation("查看粉丝列表")
     @LoginRequired
-    @RequestMapping(path = "/followers/{userId}", method = RequestMethod.GET)
+    @GetMapping(path = "/followers/{userId}")
     public String getFollowers(@PathVariable("userId") int userId, Page page, Model model) {
         User user = userService.findUserById(userId);
         if (user == null) {

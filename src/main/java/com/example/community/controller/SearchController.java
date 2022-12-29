@@ -6,15 +6,19 @@ import com.example.community.service.ElasticSearchService;
 import com.example.community.service.LikeService;
 import com.example.community.service.UserService;
 import com.example.community.util.CommunityConstant;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
 import com.example.community.entity.SearchResult;
+
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,6 +28,7 @@ import java.util.Map;
 /**
  * @author yao 2022/11/30
  */
+@Api(tags = "ES搜索API")
 @Controller
 public class SearchController implements CommunityConstant {
 
@@ -37,28 +42,29 @@ public class SearchController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
-    @RequestMapping(path = "/search",method = RequestMethod.GET)
-    public String search(String keyword, Page page, Model model){
+    @ApiOperation("搜索")
+    @GetMapping(path = "/search")
+    public String search(String keyword, Page page, Model model) {
         //搜索帖子
         try {
-            SearchResult searchResult = elasticSearchService.searchDiscussPost(keyword, (page.getCurrent() - 1)*10, page.getLimit());
+            SearchResult searchResult = elasticSearchService.searchDiscussPost(keyword, (page.getCurrent() - 1) * 10, page.getLimit());
             // 重新封装一份数据，加入用户和点赞数量信息
-            List<Map<String,Object>> discussPosts = new ArrayList<>();
+            List<Map<String, Object>> discussPosts = new ArrayList<>();
             List<DiscussPost> list = searchResult.getList();
-            if(list != null) {
+            if (list != null) {
                 for (DiscussPost post : list) {
-                    Map<String,Object> map = new HashMap<>();
+                    Map<String, Object> map = new HashMap<>();
                     //帖子 和 作者
-                    map.put("post",post);
-                    map.put("user",userService.findUserById(post.getUserId()));
+                    map.put("post", post);
+                    map.put("user", userService.findUserById(post.getUserId()));
                     // 点赞数目
-                    map.put("likeCount",likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId()));
+                    map.put("likeCount", likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId()));
 
                     discussPosts.add(map);
                 }
             }
-            model.addAttribute("discussPosts",discussPosts);
-            model.addAttribute("keyword",keyword);
+            model.addAttribute("discussPosts", discussPosts);
+            model.addAttribute("keyword", keyword);
             //分页信息
             page.setPath("/search?keyword=" + keyword);
             page.setRows(searchResult.getTotal() == 0 ? 0 : (int) searchResult.getTotal());
