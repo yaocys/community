@@ -1,6 +1,4 @@
-<<<<<<< HEAD
-=======
 # Web社区论坛项目
+项目的前后端分离分支（分离前的项目在master分支上）
 
-代码文件在另一个分支上
->>>>>>> 388d67c77943e846b4e1d0e80a4808a32ebab23d
+[接口文档](https://yaos.cc/community/doc.html#/home)
