@@ -1,6 +1,7 @@
 package com.example.community.dao;
 
 import com.example.community.entity.DiscussPost;
+import com.example.community.entity.VO.DiscussPostVO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 
@@ -29,6 +30,12 @@ public interface DiscussPostMapper {
      * @return 返回帖子DiscussPost集合list
      */
     List<DiscussPost> selectDiscussPosts(int userId, int offset, int limit,int orderMode);
+
+    /**
+     * 首页查询所有帖子列表
+     * 组合了用户名和头像
+     */
+    List<DiscussPostVO> queryDiscussPosts();
 
     /**
      * 查询列子行数

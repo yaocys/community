@@ -8,7 +8,7 @@
     <!--<meta name="_csrf" th:content="${_csrf.token}">-->
     <!--指定消息头参数的key-->
     <!--<meta name="_csrf_header" th:content="${_csrf.headerName}">-->
-    <link rel="icon" href="https://static.nowcoder.com/images/logo_87_87.png"/>
+    <link rel="icon" th:href="@{/img/icon.png}"/>
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
           crossorigin="anonymous">
     <link rel="stylesheet" th:href="@{/css/global.css}"/>
@@ -17,12 +17,14 @@
 <body>
 <div class="nk-container">
     <!-- 头部 -->
-    <header class="bg-dark sticky-top" th:fragment="nav-bar">
+    <header class="bg-white sticky-top" th:fragment="nav-bar">
         <div class="container">
             <!-- 导航 -->
             <nav class="navbar navbar-expand-lg navbar-dark">
                 <!-- logo -->
-                <a class="navbar-brand" th:href="@{/index}"></a>
+                <a class="navbar-brand" th:href="@{/index}">
+                    <img src="https://yaos.cc/icon/nav.png" width="115" height="40" alt="">
+                </a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse"
                         data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
                         aria-expanded="false" aria-label="Toggle navigation">

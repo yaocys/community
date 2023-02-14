@@ -2,10 +2,12 @@ package com.example.community.service;
 
 import com.example.community.dao.DiscussPostMapper;
 import com.example.community.entity.DiscussPost;
+import com.example.community.entity.VO.DiscussPostVO;
 import com.example.community.util.SensitiveFilter;
 import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
+import com.github.pagehelper.PageHelper;
 import org.apache.ibatis.annotations.Mapper;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
@@ -101,6 +103,12 @@ public class DiscussPostService {
         if (userId == 0 && orderMode == 1) return postListCache.get(offset + ":" + limit);
         // logger.error("load post list from DB.");
         return discussPostMapper.selectDiscussPosts(userId, offset, limit, orderMode);
+    }
+
+    public List<DiscussPostVO> queryDiscussPosts(int offset,int limit){
+        // TODO 缓存层需要改
+        PageHelper.startPage(offset,limit);
+        return discussPostMapper.queryDiscussPosts();
     }
 
     /**

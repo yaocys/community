@@ -45,7 +45,7 @@ public class SwaggerConfig {
                 .select()
                 .apis(RequestHandlerSelectors.basePackage("com.example.community.controller"))
                 .paths(PathSelectors.any())
-                .build();
+                .build().groupName("论坛项目接口");
     }
 
     /**

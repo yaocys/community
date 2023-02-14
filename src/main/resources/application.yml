@@ -99,6 +99,11 @@ mybatis:
     map-underscore-to-camel-case: true
     # 自动匹配驼峰和_命名方式
 
+pagehelper:
+  propertyName: propertyValue
+  reasonable: false
+  defaultCount: true
+
 caffeine:
   posts:
     max-size: 15

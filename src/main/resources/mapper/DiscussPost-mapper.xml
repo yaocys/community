@@ -25,6 +25,33 @@
         limit #{offset},#{limit};
     </select>
 
+    <select id="queryDiscussPosts" resultType="DiscussPostVO">
+        SELECT t1.id,
+               user_id,
+               username,
+               header_url,
+               title,
+               content,
+               t1.type,
+               t1.status,
+               t1.create_time,
+               comment_count,
+               score
+        FROM (SELECT id,
+                     user_id,
+                     title,
+                     content,
+                     type,
+                     status,
+                     create_time,
+                     comment_count,
+                     score
+              FROM discuss_post
+              WHERE status != 2
+              ORDER BY create_time DESC) t1
+                 LEFT JOIN user ON t1.user_id = user.id
+    </select>
+
     <!--根据帖子ID查帖子，为了帖子详情服务-->
     <select id="selectDiscussPostById" resultType="DiscussPost">
         select
