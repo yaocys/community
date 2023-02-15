@@ -25,7 +25,21 @@
         limit #{offset},#{limit};
     </select>
 
-    <select id="queryDiscussPosts" resultType="DiscussPostVO">
+    <resultMap id="DiscussPostDTO" type="DiscussPostVO">
+        <id property="id" column="id"/>
+        <result property="userId" column="user_id"/>
+        <result property="username" column="username"/>
+        <result property="headerUrl" column="header_url"/>
+        <result property="title" column="title"/>
+        <result property="content" column="content"/>
+        <result property="type" column="type"/>
+        <result property="status" column="status"/>
+        <result property="createTime" column="create_time"/>
+        <result property="commentCount" column="comment_count"/>
+        <result property="score" column="score"/>
+    </resultMap>
+
+    <select id="queryDiscussPosts" resultMap="DiscussPostDTO">
         SELECT t1.id,
                user_id,
                username,

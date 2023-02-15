@@ -8,7 +8,7 @@ import com.github.benmanes.caffeine.cache.CacheLoader;
 import com.github.benmanes.caffeine.cache.Caffeine;
 import com.github.benmanes.caffeine.cache.LoadingCache;
 import com.github.pagehelper.PageHelper;
-import org.apache.ibatis.annotations.Mapper;
+import com.github.pagehelper.PageInfo;
 import org.checkerframework.checker.nullness.qual.NonNull;
 import org.checkerframework.checker.nullness.qual.Nullable;
 import org.slf4j.Logger;
@@ -16,7 +16,6 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.PostConstruct;
@@ -105,10 +104,12 @@ public class DiscussPostService {
         return discussPostMapper.selectDiscussPosts(userId, offset, limit, orderMode);
     }
 
-    public List<DiscussPostVO> queryDiscussPosts(int offset,int limit){
+    public PageInfo<DiscussPostVO> queryDiscussPosts(int offset, int limit){
         // TODO 缓存层需要改
         PageHelper.startPage(offset,limit);
-        return discussPostMapper.queryDiscussPosts();
+        List<DiscussPostVO> discussPostVOList = discussPostMapper.queryDiscussPosts();
+        PageInfo<DiscussPostVO> discussPostVOPageInfo = new PageInfo<>(discussPostVOList);
+        return new PageInfo<>(discussPostVOList);
     }
 
     /**

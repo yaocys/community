@@ -8,7 +8,7 @@ import lombok.Data;
  */
 public enum ResultEnum {
 
-    SUCCESS(100,"system.success"),
+    SUCCESS(200,"system.success"),
     FAIL(500, "system.error");
 
     private Integer code;
