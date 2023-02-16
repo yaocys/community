@@ -27,7 +27,7 @@ import java.io.OutputStream;
 /**
  * @author yao 2022/5/5
  */
-@Api(tags = "用户API")
+
 @Controller
 @RequestMapping("/user")
 public class UserController implements CommunityConstant {

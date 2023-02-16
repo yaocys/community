@@ -23,7 +23,7 @@ public class ApiResult<T> {
     @ApiModelProperty(notes = "结果集")
     private T data;
 
-    public ApiResult(Integer code,String message){
+    public ApiResult(Integer code, String message) {
         this.code = code;
         this.msg = message;
     }
@@ -32,15 +32,15 @@ public class ApiResult<T> {
      * 成功
      * 无参默认
      */
-    public static <E> ApiResult<E> success(){
-        return new ApiResult<>(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMessage());
+    public static <E> ApiResult<E> success() {
+        return new ApiResult<>(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage());
     }
 
     /**
      * 成功
      * 重载 指定消息
      */
-    public static <E> ApiResult<E> success(String message){
+    public static <E> ApiResult<E> success(String message) {
         return new ApiResult<>(ResultEnum.SUCCESS.getCode(), message);
     }
 
@@ -48,32 +48,44 @@ public class ApiResult<T> {
      * 成功
      * 重载 指定返回数据
      */
-    public static <E> ApiResult<E> success(E data){
-        return new ApiResult<>(ResultEnum.SUCCESS.getCode(),ResultEnum.SUCCESS.getMessage(),data);
+    public static <E> ApiResult<E> success(E data) {
+        return new ApiResult<>(ResultEnum.SUCCESS.getCode(), ResultEnum.SUCCESS.getMessage(), data);
     }
 
     /**
      * 成功
      * 重载 指定消息和数据
      */
-    public static <E> ApiResult<E> success(String message,E data){
-        return new ApiResult<>(ResultEnum.SUCCESS.getCode(),message,data);
+    public static <E> ApiResult<E> success(String message, E data) {
+        return new ApiResult<>(ResultEnum.SUCCESS.getCode(), message, data);
     }
 
     /**
      * 失败
      * 无参默认
      */
-    public static <E> ApiResult<E> fail(){
+    public static <E> ApiResult<E> fail() {
         return new ApiResult<>(ResultEnum.FAIL.getCode(), ResultEnum.FAIL.getMessage());
+    }
+
+    public static <E> ApiResult<E> fail(String message) {
+        return new ApiResult<>(ResultEnum.FAIL.getCode(), message);
     }
 
     /**
      * 失败
      * 指定 错误码和消息
      */
-    public static <E> ApiResult<E> fail(Integer code,String message){
-        return new ApiResult<>(code,message);
+    public static <E> ApiResult<E> fail(Integer code, String message) {
+        return new ApiResult<>(code, message);
+    }
+
+    public static <E> ApiResult<E> error() {
+        return new ApiResult<>(ResultEnum.ERROR.getCode(), ResultEnum.ERROR.getMessage());
+    }
+
+    public static <E> ApiResult<E> error(String message) {
+        return new ApiResult<>(ResultEnum.ERROR.getCode(), message);
     }
 
 }

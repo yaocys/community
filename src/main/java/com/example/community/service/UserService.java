@@ -4,6 +4,7 @@ import com.example.community.dao.LoginTicketMapper;
 import com.example.community.dao.UserMapper;
 import com.example.community.entity.LoginTicket;
 import com.example.community.entity.User;
+import com.example.community.exception.VerifyException;
 import com.example.community.util.*;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.units.qual.A;
@@ -15,6 +16,7 @@ import org.springframework.stereotype.Service;
 import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
+import javax.servlet.http.Cookie;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -148,6 +150,57 @@ public class UserService implements CommunityConstant {
         }
     }
 
+    /**
+     * 校验登录信息
+     */
+    private void verifyLoginInfo(String username, String password,User user) {
+        if (StringUtils.isBlank(username)) {
+            throw new VerifyException("账号不能为空");
+        }
+        if (StringUtils.isBlank(password)) {
+            throw new VerifyException("密码不能为空");
+        }
+
+        if (user == null) {
+            throw new VerifyException("用户不存在");
+        }
+        if (user.getStatus() == 0) {
+            throw new VerifyException("账号未激活");
+        }
+        // 验证密码
+        password = CommunityUtil.md5(password + user.getSalt());
+        if (!user.getPassword().equals(password)) {
+            throw new VerifyException("密码错误");
+        }
+    }
+
+    public Cookie login2(String username, String password, boolean rememberMe) {
+        User user = userMapper.selectByName(username);
+        verifyLoginInfo(username, password,user);
+
+        int expiredSeconds = rememberMe ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
+        /*
+        生成登录凭证
+         */
+        LoginTicket loginTicket = new LoginTicket();
+        loginTicket.setUserId(user.getId());
+        loginTicket.setTicket(CommunityUtil.generateUUID());
+        loginTicket.setStatus(0);
+        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000L));
+
+        String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
+        // TODO 这里没有设置过期时间，只是标记状态不会导致redis占用越来越大吗
+        // 对象会被序列化为字符串
+        redisTemplate.opsForValue().set(redisKey, loginTicket);
+
+        Cookie cookie = new Cookie("ticket", loginTicket.getTicket());
+        // 设置生效范围
+        cookie.setPath(contextPath);
+        cookie.setMaxAge(expiredSeconds);
+
+        return cookie;
+    }
+
     public Map<String, Object> login(String username, String password, long expiredSeconds) {
         Map<String, Object> map = new HashMap<>();
         if (StringUtils.isBlank(username)) {
@@ -160,7 +213,7 @@ public class UserService implements CommunityConstant {
         }
         User user = userMapper.selectByName(username);
         if (user == null) {
-            map.put("usernameMsg", "账号不能为空");
+            map.put("usernameMsg", "用户不存在");
             return map;
         }
         if (user.getStatus() == 0) {
@@ -237,6 +290,7 @@ public class UserService implements CommunityConstant {
     /**
      * 当缓存中查不到值的时候去查数据库
      * 并初始化缓存
+     *
      * @return 用户对象，用户信息
      */
     private User initCache(int userId) {

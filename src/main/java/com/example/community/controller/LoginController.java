@@ -32,7 +32,6 @@ import java.util.concurrent.TimeUnit;
 /**
  * @author yaosu
  */
-@Api(tags = "登录相关API")
 @Controller
 public class LoginController implements CommunityConstant {
 
@@ -116,7 +115,6 @@ public class LoginController implements CommunityConstant {
     /**
      * 生成验证码图片
      */
-    @ApiOperation("生成验证码图片")
     @RequestMapping(path = "/kaptcha", method = RequestMethod.GET)
     public void getKaptcha(HttpServletResponse response/*, HttpSession session*/) {
         // 获取四位字符串
@@ -171,14 +169,13 @@ public class LoginController implements CommunityConstant {
      * @param model      存视图数据
      * @param response   返回验证码图片
      */
-    @ApiOperation("登录")
-    @RequestMapping(path = "/login", method = RequestMethod.POST)
+/*    @RequestMapping(path = "/login", method = RequestMethod.POST)
     public String login(String username, String password, String code, boolean rememberme,
-                        Model model/*, HttpSession session*/, HttpServletResponse response,
+                        Model model*//*, HttpSession session*//*, HttpServletResponse response,
                         @CookieValue(value = "kaptchaOwner", required = false) String kaptchaOwner) {
-        /*
+        *//*
         判断验证码
-         */
+         *//*
         String kaptcha;
         if (StringUtils.isNotBlank(kaptchaOwner)) {
             String redisKey = RedisKeyUtil.getKaptchaKey(kaptchaOwner);
@@ -188,9 +185,9 @@ public class LoginController implements CommunityConstant {
             return "/site/login";
         }
 
-        /*
+        *//*
         被优化的代码，redis替代session
-         */
+         *//*
         // String kaptcha = (String) session.getAttribute("kaptcha");
 
         if (StringUtils.isBlank(kaptcha) || StringUtils.isBlank(code) || !kaptcha.equalsIgnoreCase(code)) {
@@ -214,7 +211,7 @@ public class LoginController implements CommunityConstant {
             model.addAttribute("passwordMsg", map.get("passwordMsg"));
             return "site/login";
         }
-    }
+    }*/
 
     /**
      * 注意这里也是重定向刷新页面

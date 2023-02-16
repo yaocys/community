@@ -20,7 +20,7 @@ import static com.example.community.util.CommunityConstant.ENTITY_TYPE_POST;
  */
 
 @Api(tags = "前后端分离-主页API")
-@RestController("/ApiHomeController")
+@RestController
 public class ApiHomeController {
     @Resource
     private DiscussPostService discussPostService;

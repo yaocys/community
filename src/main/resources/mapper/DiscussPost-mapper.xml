@@ -61,9 +61,9 @@
                      comment_count,
                      score
               FROM discuss_post
-              WHERE status != 2
-              ORDER BY create_time DESC) t1
+              WHERE status != 2) t1
                  LEFT JOIN user ON t1.user_id = user.id
+        ORDER BY create_time DESC
     </select>
 
     <!--根据帖子ID查帖子，为了帖子详情服务-->

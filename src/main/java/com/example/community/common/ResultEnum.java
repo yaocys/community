@@ -8,8 +8,9 @@ import lombok.Data;
  */
 public enum ResultEnum {
 
-    SUCCESS(200,"system.success"),
-    FAIL(500, "system.error");
+    SUCCESS(200,"System Success"),
+    FAIL(400, "Request Wrong"),
+    ERROR(500,"System Error");
 
     private Integer code;
     private String message;
