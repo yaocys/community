@@ -33,7 +33,7 @@ import java.util.concurrent.TimeUnit;
 @Api(tags = "登录相关API")
 @RestController
 public class ApiLoginController implements CommunityConstant {
-    @Value("${server.servlet.context-path")
+    @Value("${server.servlet.context-path}")
     private String contextPath;
     @Resource
     private UserService userService;
