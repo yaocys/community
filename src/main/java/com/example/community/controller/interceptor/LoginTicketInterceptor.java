@@ -62,7 +62,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
      * 为什么要手动放到ModelAndView中
      */
     @Override
-    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) throws Exception {
+    public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
         User user = hostHolder.getUser();
         if (user!=null&&modelAndView!=null){
             modelAndView.addObject("loginUser",user);
@@ -74,7 +74,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
      * 请求结束清除
      */
     @Override
-    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) throws Exception {
+    public void afterCompletion(HttpServletRequest request, HttpServletResponse response, Object handler, Exception ex) {
         hostHolder.clear();
     }
 }

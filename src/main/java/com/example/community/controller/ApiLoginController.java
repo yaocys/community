@@ -83,7 +83,7 @@ public class ApiLoginController implements CommunityConstant {
                                    @CookieValue(value = "captchaOwner", required = false) String captchaOwner) {
         try {
             loginService.verifyCaptcha(captcha, captchaOwner);
-            Cookie cookie = userService.login2(username, password, rememberMe);
+            Cookie cookie = userService.login(username, password, rememberMe);
             response.addCookie(cookie);
         } catch (VerifyException e) {
             return ApiResult.fail(e.getMessage());

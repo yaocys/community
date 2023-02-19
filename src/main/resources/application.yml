@@ -47,12 +47,12 @@ spring:
       auto-commit-interval: 3000
   # ElasticSearch
   elasticsearch:
-    uris: 43.139.72.73:9200
+    uris: 162.14.116.127:9200
   data:
     elasticsearch:
       cluster-name: myCluster2
       # 9300是TCP端口
-      cluster-nodes: 43.139.72.73:9300
+      cluster-nodes: 162.14.116.127:9300
   # 普通线程池
   task:
     execution:

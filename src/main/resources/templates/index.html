@@ -17,10 +17,10 @@
 <body>
 <div class="nk-container">
     <!-- 头部 -->
-    <header class="bg-white sticky-top" th:fragment="nav-bar">
+    <header class="sticky-top" th:fragment="nav-bar">
         <div class="container">
             <!-- 导航 -->
-            <nav class="navbar navbar-expand-lg navbar-dark">
+            <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
                 <!-- logo -->
                 <a class="navbar-brand" th:href="@{/index}">
                     <img src="https://yaos.cc/icon/nav.png" width="115" height="40" alt="">
@@ -89,7 +89,7 @@
                 </ul>
                 <!--用户登陆了才显示-->
                 <button type="button" class="btn btn-primary btn-sm position-absolute rt-0" data-toggle="modal"
-                        data-target="#publishModal" th:if="${loginUser!=null}">我要发布
+                        data-target="#publishModal" >我要发布
                 </button>
             </div>
             <!-- 弹出框 -->

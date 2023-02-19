@@ -174,7 +174,10 @@ public class UserService implements CommunityConstant {
         }
     }
 
-    public Cookie login2(String username, String password, boolean rememberMe) {
+    /**
+     * 用户登录
+     */
+    public Cookie login(String username, String password, boolean rememberMe) {
         User user = userMapper.selectByName(username);
         verifyLoginInfo(username, password,user);
 
