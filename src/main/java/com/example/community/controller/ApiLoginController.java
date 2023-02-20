@@ -12,10 +12,8 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.CookieValue;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -43,6 +41,37 @@ public class ApiLoginController implements CommunityConstant {
     private Producer producer;
     @Resource
     private RedisTemplate redisTemplate;
+
+    @ApiOperation("注册")
+    @PostMapping(path = "/register")
+    public ApiResult<String> register(String username, String password, String email) {
+        try {
+            userService.register(username, password, email);
+        } catch (VerifyException e) {
+            return ApiResult.fail(e.getMessage());
+        } catch (Exception e) {
+            return ApiResult.error(e.getMessage());
+        }
+        return ApiResult.success("注册成功");
+    }
+
+    /**
+     * 激活链接处理
+     * <a href="http://localhost:8080/community/activation/101/code">...</a>
+     **/
+    @ApiOperation("注册账号激活")
+    @GetMapping("/activation/{userId}/{code}")
+    public ApiResult<String> activation(@PathVariable("userId") int userId, @PathVariable("code") String code) {
+        try {
+            userService.activation(userId, code);
+        } catch (VerifyException e) {
+            return ApiResult.fail(e.getMessage());
+        } catch (Exception e) {
+            return ApiResult.error(e.getMessage());
+        }
+        return ApiResult.success("注册成功");
+    }
+
 
     @ApiOperation("生成验证码图片")
     @GetMapping("/captcha")
@@ -76,6 +105,10 @@ public class ApiLoginController implements CommunityConstant {
         return ApiResult.success("生成验证码成功");
     }
 
+    /**
+     * 注意这里的登陆成功重定向，登陆成功时是没有保存用户信息的，header上个人信息栏也不会显示
+     * 重定向会刷新一次页面，再次加载用户信息
+     */
     @ApiOperation("登录")
     @PostMapping("/login")
     public ApiResult<String> login(String username, String password, String captcha, boolean rememberMe,
@@ -91,5 +124,19 @@ public class ApiLoginController implements CommunityConstant {
             return ApiResult.error(e.getMessage());
         }
         return ApiResult.success("登录成功");
+    }
+
+    @ApiOperation("注销登录")
+    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    public ApiResult<String> logout(@CookieValue("ticket") String ticket) {
+        try {
+            userService.logout(ticket);
+            SecurityContextHolder.clearContext();
+        } catch (VerifyException e) {
+            return ApiResult.fail(e.getMessage());
+        } catch (Exception e) {
+            return ApiResult.error(e.getMessage());
+        }
+        return ApiResult.success("注销成功");
     }
 }

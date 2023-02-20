@@ -5,6 +5,8 @@ package com.example.community.util;
  */
 public interface CommunityConstant {
 
+    String GLOBAL_PATH = "/";
+
     /**
      * 激活成功
      */

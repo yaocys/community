@@ -66,6 +66,54 @@ public class UserService implements CommunityConstant {
         return user;
     }
 
+    /**
+     * 校验注册信息
+     */
+    private void verifyRegisterInfo(String username,String password,String email){
+        if(StringUtils.isBlank(username)){
+            throw new VerifyException("账号不能为空");
+        }
+        if (StringUtils.isBlank(password)){
+            throw new VerifyException("密码不能为空");
+        }
+        if(userMapper.selectByName(username)!=null){
+            throw new VerifyException("账号已存在");
+        }
+        if(userMapper.selectByEmail(email)!=null){
+            throw new VerifyException("邮箱已注册");
+        }
+    }
+
+    public void register(String username,String password,String email){
+        verifyRegisterInfo(username, password, email);
+
+        User user = new User();
+        user.setUsername(username);
+        user.setEmail(email);
+        user.setSalt(CommunityUtil.generateUUID().substring(0, 5));
+        user.setPassword(CommunityUtil.md5(password + user.getSalt()));
+        user.setType(0);
+        user.setStatus(0);
+
+        // TODO 这里的激活码并不需要持久化，后面可以放到Redis中并定时过期
+        user.setActivationCode(CommunityUtil.generateUUID());
+        user.setHeaderUrl(String.format("http://images.nowcoder.com/head/%dt.png", new Random().nextInt(1000)));
+        user.setCreateTime(new Date());
+        userMapper.insertUser(user);
+
+        // 准备一个Thymeleaf的Context对象
+        Context context = new Context();
+        // 把邮箱地址和激活链接交给thymeleaf，让它动态地放到邮件中
+        context.setVariable("email", user.getEmail());
+        // http://localhost:8080/community/activation/101/code
+        String url = domain + contextPath + "/activation/" + user.getId() + "/" + user.getActivationCode();
+        context.setVariable("url", url);
+        // 生成html格式的内容
+        String content = templateEngine.process("/mail/activation", context);
+        // 发送邮件
+        mailClient.sendMail(user.getEmail(), "激活账号", content);
+    }
+
     // TODO 或许这里能封装一个统一的Result返回对象
     public Map<String, Object> register(User user) {
         Map<String, Object> map = new HashMap<>();
@@ -198,67 +246,24 @@ public class UserService implements CommunityConstant {
 
         Cookie cookie = new Cookie("ticket", loginTicket.getTicket());
         // 设置生效范围
-        cookie.setPath(contextPath);
+        cookie.setPath(GLOBAL_PATH);
         cookie.setMaxAge(expiredSeconds);
 
         return cookie;
     }
 
-    public Map<String, Object> login(String username, String password, long expiredSeconds) {
-        Map<String, Object> map = new HashMap<>();
-        if (StringUtils.isBlank(username)) {
-            map.put("usernameMsg", "账号不能为空");
-            return map;
-        }
-        if (StringUtils.isBlank(password)) {
-            map.put("password", "密码不能为空");
-            return map;
-        }
-        User user = userMapper.selectByName(username);
-        if (user == null) {
-            map.put("usernameMsg", "用户不存在");
-            return map;
-        }
-        if (user.getStatus() == 0) {
-            map.put("usernameMsg", "账号未激活");
-        }
-        // 验证密码
-        password = CommunityUtil.md5(password + user.getSalt());
-        if (!user.getPassword().equals(password)) {
-            map.put("passwordMsg", "密码不正确");
-            return map;
-        }
-
-        // 生成登录凭证
-        LoginTicket loginTicket = new LoginTicket();
-        loginTicket.setUserId(user.getId());
-        loginTicket.setTicket(CommunityUtil.generateUUID());
-        // 这里用session的SessionID不行吗？
-        loginTicket.setStatus(0);
-        loginTicket.setExpired(new Date(System.currentTimeMillis() + expiredSeconds * 1000));
-
-        String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
-        // TODO 这里没有设置过期时间，只是标记状态不会导致redis占用越来越大吗
-        // 对象会被序列化为字符串
-        redisTemplate.opsForValue().set(redisKey, loginTicket);
-
-        /*
-         被优化弃用的数据库保存
-         */
-        // loginTicketMapper.insertLoginTicket(loginTicket);
-        // 返回给客户端的凭证
-        map.put("ticket", loginTicket.getTicket());
-
-        return map;
-    }
-
+    /**
+     * 注销登录
+     * @param ticket 存在cookie中的登录凭证
+     */
     public void logout(String ticket) {
         // loginTicketMapper.updateStatus(ticket,1);
         // 修改登录凭证无效
         String redisKey = RedisKeyUtil.getTicketKey(ticket);
-        // TODO 这里取出来改了再放回去不麻烦吗？存对象标记状态是为了有记录？
-
+        // TODO 这里取出来改了再放回去不麻烦吗？存对象标记状态是为了有记录？直接删了不行吗
         LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisKey);
+        // 如果不存在这个登录用户，直接返回
+        if(loginTicket==null) return;
         loginTicket.setStatus(1);
         redisTemplate.opsForValue().set(redisKey, loginTicket);
     }

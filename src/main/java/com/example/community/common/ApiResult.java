@@ -87,5 +87,4 @@ public class ApiResult<T> {
     public static <E> ApiResult<E> error(String message) {
         return new ApiResult<>(ResultEnum.ERROR.getCode(), message);
     }
-
 }

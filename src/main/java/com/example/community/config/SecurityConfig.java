@@ -103,7 +103,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                     if ("XMLHttpRequest".equals(xRequestedWith)) {
                         response.setContentType("application/plain;charset=utf-8");
                         PrintWriter writer = response.getWriter();
-                        writer.write(ApiResult.fail(403, "用户未登录").toString());
+                        writer.write(CommunityUtil.getJSONString(403, "用户未登录"));
                     } else response.sendRedirect(request.getContextPath() + "/login");
                 })
                 // 权限不足时的处理
@@ -112,7 +112,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                     if ("XMLHttpRequest".equals(xRequestedWith)) {
                         response.setContentType("application/plain;charset=utf-8");
                         PrintWriter writer = response.getWriter();
-                        writer.write(ApiResult.fail(403, "权限不足").toString());
+                        writer.write(CommunityUtil.getJSONString(403, "权限不足"));
                     } else response.sendRedirect(request.getContextPath() + "/denied");
                 });
 
