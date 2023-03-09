@@ -47,6 +47,7 @@ public class CommentController implements CommunityConstant {
         comment.setStatus(0);
         comment.setCreateTime(new Date());
         commentService.addComment(comment);
+        
 
         /*
         触发评论事件，发送消息
