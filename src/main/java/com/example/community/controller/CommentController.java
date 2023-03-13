@@ -20,9 +20,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.Date;
 
-@Api(tags = "评论API")
 @Controller
-@RequestMapping("/comment")
 public class CommentController implements CommunityConstant {
 
     @Autowired

@@ -4,6 +4,8 @@ import com.example.community.dao.CommentMapper;
 import com.example.community.entity.Comment;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.SensitiveFilter;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
@@ -29,8 +31,14 @@ public class CommentService implements CommunityConstant {
     @Autowired
     private DiscussPostService discussPostService;
 
-    public List<Comment> findCommentsByEntity(int entityType, int entityId, int offset, int limit) {
-        return commentMapper.selectCommentsByEntity(entityType, entityId, offset, limit);
+    public List<Comment> queryAllCommentsByEntity(int entityType, int entityId) {
+        return commentMapper.selectCommentsByEntity(entityType, entityId);
+    }
+
+    public PageInfo<Comment> queryCommentsByEntity(int entityType, int entityId, int offset, int limit){
+        PageHelper.startPage(offset,limit);
+        List<Comment> commentList= commentMapper.queryCommentsByEntity(entityType, entityId);
+        return new PageInfo<>(commentList);
     }
 
     public int findCommentCount(int entityType, int entityId) {

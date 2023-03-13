@@ -76,10 +76,10 @@ public class LikeService {
      * @param entityId 目标实体类型的ID
      * @return 0/1，是否已经点赞
      */
-    public int findEntityLikeStatus(int userId,int entityType,int entityId){
+    public boolean findEntityLikeStatus(int userId,int entityType,int entityId){
         // TODO 这个方法就不能和上面的like合二为一吗？
         String entityLikeKey = RedisKeyUtil.getEntityLikeKey(entityType, entityId);
-        return redisTemplate.opsForSet().isMember(entityLikeKey,userId)?1:0;
+        return redisTemplate.opsForSet().isMember(entityLikeKey,userId)?true:false;
     }
 
     /**

@@ -108,7 +108,6 @@ public class DiscussPostService {
         // TODO 缓存层需要改
         PageHelper.startPage(offset,limit);
         List<DiscussPostVO> discussPostVOList = discussPostMapper.queryDiscussPosts();
-        PageInfo<DiscussPostVO> discussPostVOPageInfo = new PageInfo<>(discussPostVOList);
         return new PageInfo<>(discussPostVOList);
     }
 

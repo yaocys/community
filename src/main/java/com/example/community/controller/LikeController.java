@@ -54,7 +54,7 @@ public class LikeController implements CommunityConstant {
 
         long likeCount = likeService.findEntityLikeCount(entityType, entityId);
 
-        int likeStatus = likeService.findEntityLikeStatus(user.getId(), entityType, entityId);
+        boolean likeStatus = likeService.findEntityLikeStatus(user.getId(), entityType, entityId);
 
         Map<String, Object> map = new HashMap<>();
         map.put("likeCount", likeCount);
@@ -63,7 +63,7 @@ public class LikeController implements CommunityConstant {
         /*
         触发点赞事件，发送消息
          */
-        if (likeStatus == 1) {
+        if (likeStatus) {
             Event event = new Event()
                     .setTopic(TOPIC_LIKE)
                     .setUserId(hostHolder.getUser().getId())
