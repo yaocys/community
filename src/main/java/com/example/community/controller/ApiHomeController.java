@@ -19,7 +19,7 @@ import static com.example.community.util.CommunityConstant.ENTITY_TYPE_POST;
  * 2023/2/13 16:47
  */
 
-@Api(tags = "前后端分离-主页API")
+@Api(tags = "主页API")
 @RestController
 public class ApiHomeController {
     @Resource
@@ -43,5 +43,18 @@ public class ApiHomeController {
             }
         }
         return ApiResult.success("首页帖子列表查询成功",pageInfo);
+    }
+
+    // TODO 这两个重定向应该交给前端去做，但是后端要给出消息
+    @ApiOperation("错误页")
+    @GetMapping("/error")
+    public String getErrorPage() {
+        return "/error/500";
+    }
+
+    @ApiOperation("拦截/404页")
+    @GetMapping("/denied")
+    public String getDeniedPage() {
+        return "/error/404";
     }
 }
