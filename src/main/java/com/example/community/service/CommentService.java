@@ -48,8 +48,6 @@ public class CommentService implements CommunityConstant {
 
     /**
      * 次数包含事务
-     * @param comment
-     * @return
      */
     @Transactional(isolation = Isolation.READ_COMMITTED, propagation = Propagation.REQUIRED)
     public int addComment(Comment comment) {
