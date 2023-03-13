@@ -2,6 +2,8 @@ package com.example.community.controller;
 
 import com.example.community.common.ApiResult;
 import com.example.community.entity.Comment;
+import com.example.community.entity.DiscussPost;
+import com.example.community.entity.Event;
 import com.example.community.entity.User;
 import com.example.community.entity.VO.CommentVO;
 import com.example.community.entity.VO.ReplyVO;
@@ -10,23 +12,20 @@ import com.example.community.service.CommentService;
 import com.example.community.service.DiscussPostService;
 import com.example.community.service.LikeService;
 import com.example.community.service.UserService;
+import com.example.community.util.CommunityConstant;
 import com.example.community.util.HostHolder;
 import com.example.community.util.PageInfoUtil;
+import com.example.community.util.RedisKeyUtil;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
-
-import static com.example.community.util.CommunityConstant.ENTITY_TYPE_COMMENT;
-import static com.example.community.util.CommunityConstant.ENTITY_TYPE_POST;
 
 /**
  * @author yaosunique@gmail.com
@@ -35,7 +34,7 @@ import static com.example.community.util.CommunityConstant.ENTITY_TYPE_POST;
 @Api(tags = "评论API")
 @RestController
 @RequestMapping("/comment")
-public class ApiCommentController {
+public class ApiCommentController implements CommunityConstant {
     @Resource
     private CommentService commentService;
     @Resource
@@ -113,5 +112,55 @@ public class ApiCommentController {
         PageInfo<CommentVO> targetPageInfo = PageInfoUtil.convertPageInfo(pageInfo, CommentVO.class);
         targetPageInfo.setList(commentVOList);
         return ApiResult.success(targetPageInfo);
+    }
+
+    @ApiOperation("添加评论，对象可能是帖子、评论、回复")
+    @PostMapping("/add/{discussPostId}")
+    public ApiResult<String> addComment(@PathVariable("discussPostId") int discussPostId, Comment comment) {
+        comment.setUserId(hostHolder.getUser().getId());
+        // 这里可能会为空报错，后面处理
+        comment.setStatus(0);
+        comment.setCreateTime(new Date());
+        commentService.addComment(comment);
+
+        /*
+        触发评论事件，发送消息
+         */
+        Event event = new Event()
+                .setTopic(TOPIC_COMMENT)
+                .setUserId(hostHolder.getUser().getId())
+                .setEntityType(comment.getEntityType())
+                .setEntityId(comment.getEntityId())
+                .setData("postId", discussPostId);
+
+        // 根据不同的实体对象类型查并设置EntityUserId
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            DiscussPost target = discussPostService.findDiscussPostById(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());
+        } else if (comment.getEntityType() == ENTITY_TYPE_COMMENT) {
+            Comment target = commentService.findCommentById(comment.getEntityId());
+            event.setEntityUserId(target.getUserId());
+        }
+
+        eventProducer.fireEvent(event);
+
+        /*
+        如果评论的是帖子，就触发帖子的评论事件，向ES更新帖子
+         */
+        if (comment.getEntityType() == ENTITY_TYPE_POST) {
+            // 触发发帖事件
+            event = new Event()
+                    .setTopic(TOPIC_PUBLISH)
+                    .setUserId(comment.getUserId())
+                    .setEntityType(ENTITY_TYPE_POST)
+                    .setEntityId(discussPostId);
+            eventProducer.fireEvent(event);
+            // 计算帖子分数
+            String redisKey = RedisKeyUtil.getPostScoreKey();
+            redisTemplate.opsForSet().add(redisKey, discussPostId);
+        }
+
+        // TODO 发布完评论前端记得刷新页面
+        return ApiResult.success("回复/评论成功");
     }
 }
