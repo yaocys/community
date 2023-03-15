@@ -1,53 +1,42 @@
 package com.example.community.controller;
 
+import com.example.community.common.ApiResult;
 import com.example.community.entity.Event;
 import com.example.community.entity.User;
+import com.example.community.entity.VO.LikeVO;
 import com.example.community.event.EventProducer;
 import com.example.community.service.LikeService;
 import com.example.community.util.CommunityConstant;
-import com.example.community.util.CommunityUtil;
 import com.example.community.util.HostHolder;
 import com.example.community.util.RedisKeyUtil;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
-import org.checkerframework.checker.units.qual.A;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.redis.core.RedisTemplate;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.util.HashMap;
-import java.util.Map;
+import javax.annotation.Resource;
 
 /**
- * @author yao 2022/6/16
+ * @author yaosunique@gmail.com
+ * 2023/3/13 21:40
  */
 @Api(tags = "点赞操作API")
-@Controller
-public class LikeController implements CommunityConstant {
-    @Autowired
+@RestController
+public class ApiLikeController implements CommunityConstant {
+
+    @Resource
     private LikeService likeService;
-    @Autowired
+    @Resource
     private HostHolder hostHolder;
-
-    @Autowired
+    @Resource
     private EventProducer eventProducer;
-
-    @Autowired
+    @Resource
     private RedisTemplate redisTemplate;
 
-    /**
-     * 点赞接口
-     *
-     * @param entityType 点赞的目标实体类型
-     * @param entityId   点赞目标实体类型的ID
-     */
-    @ApiOperation("给某个实体点赞，点两下取消")
+    @ApiOperation(value = "点赞", notes = "点两下取消")
     @PostMapping("/like")
-    @ResponseBody
-    public String like(int entityType, int entityId, int entityAuthorId, int postId) {
-        // TODO 这里后面会用权限管理框架统一处理
+    public ApiResult<LikeVO> like(int entityType, int entityId, int entityAuthorId, int postId) {
         User user = hostHolder.getUser();
 
         likeService.like(user.getId(), entityType, entityId, entityAuthorId);
@@ -56,9 +45,7 @@ public class LikeController implements CommunityConstant {
 
         boolean likeStatus = likeService.findEntityLikeStatus(user.getId(), entityType, entityId);
 
-        Map<String, Object> map = new HashMap<>();
-        map.put("likeCount", likeCount);
-        map.put("likeStatus", likeStatus);
+        LikeVO likeVO = new LikeVO(likeCount, likeStatus);
 
         /*
         触发点赞事件，发送消息
@@ -82,6 +69,6 @@ public class LikeController implements CommunityConstant {
             redisTemplate.opsForSet().add(redisKey, postId);
         }
 
-        return CommunityUtil.getJSONString(0, null, map);
+        return ApiResult.success(likeVO);
     }
 }

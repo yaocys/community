@@ -22,7 +22,6 @@ import java.util.*;
 /**
  * @author yaosu
  */
-@Api(tags = "私信API")
 @Controller
 public class MessageController implements CommunityConstant {
 
@@ -38,8 +37,6 @@ public class MessageController implements CommunityConstant {
     /**
      * 私信列表
      */
-    @ApiOperation("私信列表")
-    @GetMapping("/letter/list")
     public String getLetterList(Model model, Page page) {
         User user = hostHolder.getUser();
         // 分页信息

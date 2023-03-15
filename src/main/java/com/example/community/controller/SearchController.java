@@ -28,7 +28,6 @@ import java.util.Map;
 /**
  * @author yao 2022/11/30
  */
-@Api(tags = "ES搜索API")
 @Controller
 public class SearchController implements CommunityConstant {
 
@@ -42,8 +41,6 @@ public class SearchController implements CommunityConstant {
     @Autowired
     private LikeService likeService;
 
-    @ApiOperation("搜索")
-    @GetMapping(path = "/search")
     public String search(String keyword, Page page, Model model) {
         //搜索帖子
         try {
