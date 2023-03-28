@@ -19,6 +19,7 @@ public class Comment {
     private int entityId;
     /**
      * 回复某个人
+     * 如果是回复帖子就没有，只有回复评论才有
      */
     private int targetId;
     private String content;

@@ -1,9 +1,13 @@
 package com.example.community.service;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import com.example.community.dao.LoginTicketMapper;
 import com.example.community.dao.UserMapper;
 import com.example.community.entity.LoginTicket;
 import com.example.community.entity.User;
+import com.example.community.entity.VO.UserVO;
 import com.example.community.exception.VerifyException;
 import com.example.community.util.*;
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +21,9 @@ import org.thymeleaf.TemplateEngine;
 import org.thymeleaf.context.Context;
 
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.concurrent.TimeUnit;
 
@@ -69,22 +76,23 @@ public class UserService implements CommunityConstant {
     /**
      * 校验注册信息
      */
-    private void verifyRegisterInfo(String username,String password,String email){
-        if(StringUtils.isBlank(username)){
+    private void verifyRegisterInfo(String username, String password, String email) {
+        // FIXME 这里要检查非法字符，不然存cookie要报错
+        if (StringUtils.isBlank(username)) {
             throw new VerifyException("账号不能为空");
         }
-        if (StringUtils.isBlank(password)){
+        if (StringUtils.isBlank(password)) {
             throw new VerifyException("密码不能为空");
         }
-        if(userMapper.selectByName(username)!=null){
+        if (userMapper.selectByName(username) != null) {
             throw new VerifyException("账号已存在");
         }
-        if(userMapper.selectByEmail(email)!=null){
+        if (userMapper.selectByEmail(email) != null) {
             throw new VerifyException("邮箱已注册");
         }
     }
 
-    public void register(String username,String password,String email){
+    public void register(String username, String password, String email) {
         verifyRegisterInfo(username, password, email);
 
         User user = new User();
@@ -201,7 +209,7 @@ public class UserService implements CommunityConstant {
     /**
      * 校验登录信息
      */
-    private void verifyLoginInfo(String username, String password,User user) {
+    private void verifyLoginInfo(String username, String password, User user) {
         if (StringUtils.isBlank(username)) {
             throw new VerifyException("账号不能为空");
         }
@@ -225,9 +233,9 @@ public class UserService implements CommunityConstant {
     /**
      * 用户登录
      */
-    public Cookie login(String username, String password, boolean rememberMe) {
+    public void login(String username, String password, boolean rememberMe, HttpServletResponse response) {
         User user = userMapper.selectByName(username);
-        verifyLoginInfo(username, password,user);
+        verifyLoginInfo(username, password, user);
 
         int expiredSeconds = rememberMe ? REMEMBER_EXPIRED_SECONDS : DEFAULT_EXPIRED_SECONDS;
         /*
@@ -244,16 +252,34 @@ public class UserService implements CommunityConstant {
         // 对象会被序列化为字符串
         redisTemplate.opsForValue().set(redisKey, loginTicket);
 
+        /*
+        保存登录凭证
+        */
         Cookie cookie = new Cookie("ticket", loginTicket.getTicket());
-        // 设置生效范围
         cookie.setPath(GLOBAL_PATH);
         cookie.setMaxAge(expiredSeconds);
+        /*
+        在前端保存一份用户信息
+        */
+        Cookie userId= new Cookie("userId", user.getId()+"");
+        Cookie headerUrl = new Cookie("headerUrl",user.getHeaderUrl());
+        Cookie name = new Cookie("username",user.getUsername());
+        userId.setPath(GLOBAL_PATH);
+        headerUrl.setPath(GLOBAL_PATH);
+        name.setPath(GLOBAL_PATH);
+        userId.setMaxAge(expiredSeconds);
+        headerUrl.setMaxAge(expiredSeconds);
+        name.setMaxAge(expiredSeconds);
 
-        return cookie;
+        response.addCookie(userId);
+        response.addCookie(headerUrl);
+        response.addCookie(name);
+        response.addCookie(cookie);
     }
 
     /**
      * 注销登录
+     *
      * @param ticket 存在cookie中的登录凭证
      */
     public void logout(String ticket) {
@@ -263,7 +289,7 @@ public class UserService implements CommunityConstant {
         // TODO 这里取出来改了再放回去不麻烦吗？存对象标记状态是为了有记录？直接删了不行吗
         LoginTicket loginTicket = (LoginTicket) redisTemplate.opsForValue().get(redisKey);
         // 如果不存在这个登录用户，直接返回
-        if(loginTicket==null) return;
+        if (loginTicket == null) return;
         loginTicket.setStatus(1);
         redisTemplate.opsForValue().set(redisKey, loginTicket);
     }

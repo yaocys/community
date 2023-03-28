@@ -99,12 +99,15 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter implements Comm
                 // 没有登陆时的处理
                 .authenticationEntryPoint((request, response, e) -> {
                     // axios发请求而不是ajax，获取不到自定义头，ajax的头其实只是一个标记意义无实意
-                    String xRequestedWith = request.getHeader("x-requested-with");
+/*                    String xRequestedWith = request.getHeader("x-requested-with");
                     if ("XMLHttpRequest".equals(xRequestedWith)) {
                         response.setContentType("application/plain;charset=utf-8");
                         PrintWriter writer = response.getWriter();
                         writer.write(CommunityUtil.getJSONString(403, "用户未登录"));
-                    } else response.sendRedirect(request.getContextPath() + "/login");
+                    } else response.sendRedirect(request.getContextPath() + "/login");*/
+                    response.setContentType("application/plain;charset=utf-8");
+                    PrintWriter writer = response.getWriter();
+                    writer.write(CommunityUtil.getJSONString(403, "用户未登录"));
                 })
                 // 权限不足时的处理
                 .accessDeniedHandler((request, response, e) -> {

@@ -28,7 +28,7 @@ public class ApiHomeController {
     private LikeService likeService;
 
     @ApiOperation("分页 主页帖子列表，每次传递页码，实现一页一页加载数据")
-    @GetMapping(path = "/apiIndex")
+    @GetMapping(path = "/index")
     public ApiResult<PageInfo<DiscussPostVO>> queryDiscussList(int offset, int limit){
         /*
         这里考虑一个问题，我不应该一次性把所有的数据全部都查出来返回了，而是应该根据前端页面一页一页的加载

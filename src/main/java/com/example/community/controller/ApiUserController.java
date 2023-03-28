@@ -3,6 +3,7 @@ package com.example.community.controller;
 import com.example.community.common.ApiResult;
 import com.example.community.entity.User;
 import com.example.community.entity.VO.ProfileVO;
+import com.example.community.entity.VO.UserVO;
 import com.example.community.service.FollowService;
 import com.example.community.service.LikeService;
 import com.example.community.service.UserService;
@@ -126,5 +127,12 @@ public class ApiUserController implements CommunityConstant {
         profileVO.setHasFollowed(hasFollowed);
 
         return ApiResult.success(profileVO);
+    }
+
+    @ApiOperation("获取当前用户信息")
+    @GetMapping("/info")
+    public ApiResult<UserVO> getUserInfo() {
+        User user = hostHolder.getUser();
+        return ApiResult.success(new UserVO(user));
     }
 }

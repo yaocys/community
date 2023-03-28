@@ -3,6 +3,8 @@ package com.example.community.service;
 import com.example.community.dao.MessageMapper;
 import com.example.community.entity.Message;
 import com.example.community.util.SensitiveFilter;
+import com.github.pagehelper.PageHelper;
+import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.util.HtmlUtils;
@@ -21,8 +23,10 @@ public class MessageService {
     @Autowired
     private SensitiveFilter sensitiveFilter;
 
-    public List<Message> findConversations(int userId, int offset, int limit) {
-        return messageMapper.selectConversations(userId, offset, limit);
+    public PageInfo<Message> findConversations(int userId, int offset, int limit) {
+        PageHelper.startPage(offset, limit);
+        List<Message> messageList = messageMapper.selectConversations(userId, offset, limit);
+        return new PageInfo<>(messageList);
     }
 
     public int findConversationCount(int userId) {

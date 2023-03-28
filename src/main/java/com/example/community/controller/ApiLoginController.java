@@ -1,11 +1,15 @@
 package com.example.community.controller;
 
+import com.alibaba.fastjson.JSONObject;
 import com.example.community.common.ApiResult;
+import com.example.community.entity.User;
+import com.example.community.entity.VO.UserVO;
 import com.example.community.exception.VerifyException;
 import com.example.community.service.LoginService;
 import com.example.community.service.UserService;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
+import com.example.community.util.HostHolder;
 import com.example.community.util.RedisKeyUtil;
 import com.google.code.kaptcha.Producer;
 import io.swagger.annotations.Api;
@@ -41,6 +45,8 @@ public class ApiLoginController implements CommunityConstant {
     private Producer producer;
     @Resource
     private RedisTemplate redisTemplate;
+    @Resource
+    private HostHolder hostHolder;
 
     @ApiOperation("注册")
     @PostMapping(path = "/register")
@@ -111,13 +117,12 @@ public class ApiLoginController implements CommunityConstant {
      */
     @ApiOperation("登录")
     @PostMapping("/login")
-    public ApiResult<String> login(String username, String password, String captcha, boolean rememberMe,
+    public ApiResult<UserVO> login(String username, String password, String captcha, boolean rememberMe,
                                    HttpServletResponse response,
                                    @CookieValue(value = "captchaOwner", required = false) String captchaOwner) {
         try {
             loginService.verifyCaptcha(captcha, captchaOwner);
-            Cookie cookie = userService.login(username, password, rememberMe);
-            response.addCookie(cookie);
+            userService.login(username, password, rememberMe,response);
         } catch (VerifyException e) {
             return ApiResult.fail(e.getMessage());
         } catch (Exception e) {
@@ -127,7 +132,7 @@ public class ApiLoginController implements CommunityConstant {
     }
 
     @ApiOperation("注销登录")
-    @RequestMapping(path = "/logout", method = RequestMethod.GET)
+    @GetMapping("/logout")
     public ApiResult<String> logout(@CookieValue("ticket") String ticket) {
         try {
             userService.logout(ticket);

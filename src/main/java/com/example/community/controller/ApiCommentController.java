@@ -116,7 +116,7 @@ public class ApiCommentController implements CommunityConstant {
 
     @ApiOperation("添加评论，对象可能是帖子、评论、回复")
     @PostMapping("/add/{discussPostId}")
-    public ApiResult<String> addComment(@PathVariable("discussPostId") int discussPostId, Comment comment) {
+    public ApiResult<String> addComment(@PathVariable("discussPostId") int discussPostId,@RequestBody Comment comment) {
         comment.setUserId(hostHolder.getUser().getId());
         // 这里可能会为空报错，后面处理
         comment.setStatus(0);
