@@ -17,7 +17,7 @@
     查某个用户的每个会话中，最新（最后）的那条消息显示在列表中-->
     <select id="selectConversations" resultType="Message">
         select
-        <include refid="selectFields"></include>
+        <include refid="selectFields"/>
         from message
         where id in (
         select max(id) from message
@@ -45,7 +45,7 @@
     <!--查询会话的所有消息-->
     <select id="selectLetters" resultType="Message">
         select
-        <include refid="selectFields"></include>
+        <include refid="selectFields"/>
         from message
         where status != 2
         and from_id != 1
@@ -75,7 +75,7 @@
     </select>
 
     <insert id="insertMessage" parameterType="Message" keyProperty="id">
-        insert into message(<include refid="insertFields"></include>)
+        insert into message(<include refid="insertFields"/>)
         values(#{fromId},#{toId},#{conversationId},#{content},#{status},#{createTime})
     </insert>
 
@@ -89,7 +89,7 @@
 
     <select id="selectLatestNotice" resultType="Message">
         select
-        <include refid="selectFields"></include>
+        <include refid="selectFields"/>
         from message
         where id in (
         select max(id) from message
@@ -121,7 +121,7 @@
 
     <select id="selectNotices" resultType="Message">
         select
-        <include refid="selectFields"></include>
+        <include refid="selectFields"/>
         from message
         where status != 2
         and from_id = 1

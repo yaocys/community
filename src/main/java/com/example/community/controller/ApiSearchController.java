@@ -37,7 +37,7 @@ public class ApiSearchController implements CommunityConstant {
     private LikeService likeService;
 
     @ApiOperation("搜索")
-    @GetMapping(path = "/search")
+    @GetMapping("/search")
     public ApiResult<PageInfo<DiscussPostVO>> search(String keyword, int current, int limit) throws IOException {
         List<DiscussPostVO> discussPostVOList = new ArrayList<>();
         PageHelper.startPage((current - 1) * 10, limit);

@@ -5,8 +5,7 @@
 <mapper namespace="com.example.community.dao.DiscussPostMapper">
 
     <sql id="selectFields">
-        id
-        ,user_id,title,content,type,status,create_time,comment_count,score</sql>
+        id,user_id,title,content,type,status,create_time,comment_count,score</sql>
 
     <!--查询帖子列表，userID是动态参数
     order by type是为了置顶-->
@@ -69,7 +68,7 @@
     <!--根据帖子ID查帖子，为了帖子详情服务-->
     <select id="selectDiscussPostById" resultType="DiscussPost">
         select
-        <include refid="selectFields"></include>
+        <include refid="selectFields"/>
         from discuss_post
         where id = #{id}
     </select>

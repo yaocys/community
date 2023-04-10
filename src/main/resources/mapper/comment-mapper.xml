@@ -13,7 +13,7 @@
     </sql>
 
     <select id="selectCommentsByEntity" resultType="Comment">
-        select <include refid="selectFields"></include>
+        select <include refid="selectFields"/>
         from comment
         where status = 0
         and entity_type = #{entityType}
@@ -22,7 +22,7 @@
     </select>
 
     <select id="queryCommentsByEntity" resultType="Comment">
-        select <include refid="selectFields"></include>
+        select <include refid="selectFields"/>
         from comment
         where status = 0
         and entity_type = #{entityType}
@@ -39,12 +39,12 @@
     </select>
 
     <insert id="insertComment" parameterType="Comment">
-        insert into comment(<include refid="insertFields"></include>)
+        insert into comment(<include refid="insertFields"/>)
         values(#{userId},#{entityType},#{entityId},#{targetId},#{content},#{status},#{createTime})
     </insert>
 
     <select id="selectCommentById" resultType="Comment">
-        select <include refid="selectFields"></include>
+        select <include refid="selectFields"/>
         from comment
         where id = #{id}
     </select>
