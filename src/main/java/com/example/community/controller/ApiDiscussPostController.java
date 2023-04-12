@@ -5,7 +5,6 @@ import com.example.community.entity.DiscussPost;
 import com.example.community.entity.Event;
 import com.example.community.entity.User;
 import com.example.community.event.EventProducer;
-import com.example.community.service.CommentService;
 import com.example.community.service.DiscussPostService;
 import com.example.community.service.LikeService;
 import com.example.community.service.UserService;
@@ -36,8 +35,6 @@ public class ApiDiscussPostController implements CommunityConstant {
     private HostHolder hostHolder;
     @Resource
     private UserService userService;
-    @Resource
-    private CommentService commentService;
     @Resource
     private LikeService likeService;
     @Resource
@@ -74,7 +71,7 @@ public class ApiDiscussPostController implements CommunityConstant {
                 .setEntityId(discussPost.getId());
         eventProducer.fireEvent(event);
 
-                /*
+        /*
         触发将影响帖子分数的事件时，将对应的帖子ID缓存起来，后面定时处理
          */
         String redisKey = RedisKeyUtil.getPostScoreKey();

@@ -9,6 +9,7 @@ import com.example.community.service.ElasticSearchService;
 import com.example.community.service.LikeService;
 import com.example.community.service.UserService;
 import com.example.community.util.CommunityConstant;
+import com.example.community.util.HostHolder;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
@@ -35,6 +36,8 @@ public class ApiSearchController implements CommunityConstant {
     private UserService userService;
     @Resource
     private LikeService likeService;
+    @Resource
+    private HostHolder hostHolder;
 
     @ApiOperation("搜索")
     @GetMapping("/search")
@@ -49,7 +52,8 @@ public class ApiSearchController implements CommunityConstant {
             for (DiscussPost post : list) {
                 User user = userService.findUserById(post.getUserId());
                 long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, post.getId());
-                DiscussPostVO discussPostVO = new DiscussPostVO(post, user.getUsername(), user.getHeaderUrl(), likeCount);
+                boolean likeStatus = hostHolder.getUser() != null && likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, post.getId());
+                DiscussPostVO discussPostVO = new DiscussPostVO(post, user.getUsername(), user.getHeaderUrl(), likeCount,likeStatus);
                 discussPostVOList.add(discussPostVO);
             }
         }

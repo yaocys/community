@@ -19,8 +19,9 @@ public class DiscussPostVO extends DiscussPost {
     String username;
     String headerUrl;
     Long likeCount;
+    boolean likeStatus;
 
-    public DiscussPostVO(DiscussPost discussPost, String username, String headerUrl, Long likeCount) {
+    public DiscussPostVO(DiscussPost discussPost, String username, String headerUrl, Long likeCount,boolean likeStatus) {
         super(discussPost.getId(),
                 discussPost.getUserId(),
                 discussPost.getTitle(),
@@ -33,5 +34,6 @@ public class DiscussPostVO extends DiscussPost {
         this.username = username;
         this.headerUrl = headerUrl;
         this.likeCount = likeCount;
+        this.likeStatus = likeStatus;
     }
 }

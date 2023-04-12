@@ -41,11 +41,7 @@ public class ApiLikeController implements CommunityConstant {
 
         likeService.like(user.getId(), entityType, entityId, entityAuthorId);
 
-        long likeCount = likeService.findEntityLikeCount(entityType, entityId);
-
         boolean likeStatus = likeService.findEntityLikeStatus(user.getId(), entityType, entityId);
-
-        LikeVO likeVO = new LikeVO(likeCount, likeStatus);
 
         /*
         触发点赞事件，发送消息
@@ -69,6 +65,9 @@ public class ApiLikeController implements CommunityConstant {
             redisTemplate.opsForSet().add(redisKey, postId);
         }
 
-        return ApiResult.success(likeVO);
+        /*
+         * 因为这里前端点赞的状态并不是后端的实时真实数据，所以这里其实不用返回任何数据
+         */
+        return ApiResult.success("点赞/取消点赞 成功");
     }
 }

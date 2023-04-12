@@ -4,6 +4,7 @@ import com.example.community.common.ApiResult;
 import com.example.community.entity.VO.DiscussPostVO;
 import com.example.community.service.DiscussPostService;
 import com.example.community.service.LikeService;
+import com.example.community.util.HostHolder;
 import com.github.pagehelper.PageInfo;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -26,6 +27,8 @@ public class ApiHomeController {
     private DiscussPostService discussPostService;
     @Resource
     private LikeService likeService;
+    @Resource
+    private HostHolder hostHolder;
 
     @ApiOperation("分页 主页帖子列表，每次传递页码，实现一页一页加载数据")
     @GetMapping(path = "/index")
@@ -40,6 +43,8 @@ public class ApiHomeController {
             for(DiscussPostVO discussPostVO :pageInfo.getList()){
                 long likeCount = likeService.findEntityLikeCount(ENTITY_TYPE_POST, discussPostVO.getId());
                 discussPostVO.setLikeCount(likeCount);
+                boolean likeStatus = hostHolder.getUser() != null && likeService.findEntityLikeStatus(hostHolder.getUser().getId(), ENTITY_TYPE_POST, discussPostVO.getId());
+                discussPostVO.setLikeStatus(likeStatus);
             }
         }
         return ApiResult.success("首页帖子列表查询成功",pageInfo);
