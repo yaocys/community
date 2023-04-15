@@ -25,7 +25,7 @@ import java.util.Map;
  * @author yaocy yaosunique@gmail.com
  * 2023/2/16 23:28
  */
-@Api(tags = "前后端分离-帖子操作API")
+@Api(tags = "帖子操作API")
 @RestController
 @RequestMapping("/post")
 public class ApiDiscussPostController implements CommunityConstant {

@@ -107,7 +107,7 @@ public class ApiUserController implements CommunityConstant {
         User user = userService.findUserById(userId);
         ProfileVO profileVO = new ProfileVO();
         if (user == null) return ApiResult.fail("该用户不存在");
-        profileVO.setUser(user);
+        profileVO.setUserVO(new UserVO(user));
 
         // 点赞数量
         int likeCount = likeService.findUserLikeCount(userId);

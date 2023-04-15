@@ -13,7 +13,7 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class ProfileVO {
-    private User user;
+    private UserVO userVO;
     private int likeCount;
     private long followeeCount;
     private long followerCount;

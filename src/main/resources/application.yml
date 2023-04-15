@@ -1,12 +1,12 @@
 # 公共配置
 server:
   servlet:
-    context-path: /community
+    context-path: /api
 
 spring:
   # 指定选择的配置文件
   profiles:
-    active: dev
+    active: app
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://43.139.72.73:3306/community?characterEncoding=utf-8&useSSL=false&allowPublicKeyRetrieval=true&serverTimezone=Hongkong
