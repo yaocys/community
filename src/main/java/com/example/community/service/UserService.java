@@ -213,6 +213,10 @@ public class UserService implements CommunityConstant {
         if (StringUtils.isBlank(username)) {
             throw new VerifyException("账号不能为空");
         }
+        /*
+        考虑到通过微信登录的用户是没有密码的，而这里正好不允许密码为空
+        于是就避免了有人用微信登录注册的账号+空密码去尝试登录网页
+         */
         if (StringUtils.isBlank(password)) {
             throw new VerifyException("密码不能为空");
         }
@@ -233,7 +237,7 @@ public class UserService implements CommunityConstant {
     /**
      * 用户登录
      */
-    public void login(String username, String password, boolean rememberMe, HttpServletResponse response) {
+    public Map<String,Object> login(String username, String password, boolean rememberMe, HttpServletResponse response) {
         User user = userMapper.selectByName(username);
         verifyLoginInfo(username, password, user);
 
@@ -258,10 +262,11 @@ public class UserService implements CommunityConstant {
         Cookie cookie = new Cookie("ticket", loginTicket.getTicket());
         cookie.setPath(GLOBAL_PATH);
         cookie.setMaxAge(expiredSeconds);
+        // cookie.setDomain("yaos.cc");
         /*
         在前端保存一份用户信息
         */
-        Cookie userId= new Cookie("userId", user.getId()+"");
+/*        Cookie userId= new Cookie("userId", user.getId()+"");
         Cookie headerUrl = new Cookie("headerUrl",user.getHeaderUrl());
         Cookie name = new Cookie("username",user.getUsername());
         userId.setPath(GLOBAL_PATH);
@@ -273,8 +278,15 @@ public class UserService implements CommunityConstant {
 
         response.addCookie(userId);
         response.addCookie(headerUrl);
-        response.addCookie(name);
+        response.addCookie(name);*/
         response.addCookie(cookie);
+
+        Map<String,Object> userInfo = new HashMap<>();
+        userInfo.put("ticket",loginTicket.getTicket());// 只需要返回token而不需要整个对象
+        userInfo.put("userId",user.getId());
+        userInfo.put("headerUrl",user.getHeaderUrl());
+        userInfo.put("username",user.getUsername());
+        return userInfo;
     }
 
     /**

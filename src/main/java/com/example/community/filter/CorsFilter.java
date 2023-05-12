@@ -33,18 +33,21 @@ public class CorsFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+
         HttpServletResponse response = (HttpServletResponse) servletResponse;
+        HttpServletRequest request = (HttpServletRequest) servletRequest;
+        String curOrigin = request.getHeader("Origin");
         //需要注意的是，如果要发送Cookie，Access-Control-Allow-Origin就不能设为星号，必须指定明确的、与请求网页一致的域名
-        response.setHeader("Access-Control-Allow-Origin", "http://localhost:3000");
+        response.setHeader("Access-Control-Allow-Origin", curOrigin);
         response.setHeader("Access-Control-Allow-Credentials", "true");
         response.setHeader("Access-Control-Allow-Methods", "POST, GET, PATCH, DELETE, PUT");
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+        String jsessionId = request.getSession().getId();
+        response.setHeader("JSESSIONID", "JSESSIONID=" + jsessionId + ";");
         // response.setHeader("Access-Control-Expose-Headers", "X-Requested-With");
         filterChain.doFilter(servletRequest, servletResponse);
 
-        HttpServletRequest request = (HttpServletRequest) servletRequest;
-        String curOrigin = request.getHeader("Origin");
         if (StringUtils.isNotBlank(curOrigin))
             logger.info("### 跨域过滤器->当前访问来源->" + curOrigin + " ### " + new Date());
 

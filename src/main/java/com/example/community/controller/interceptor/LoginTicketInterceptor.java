@@ -33,7 +33,7 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
      * 在请求开始之初，使用凭证获取用户，并将用户暂存
      */
     @Override
-    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
+    public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 从cookie中获取凭证
         String ticket = CookieUtil.getValue(request,"ticket");
         if (ticket!=null){
@@ -63,10 +63,6 @@ public class LoginTicketInterceptor implements HandlerInterceptor {
      */
     @Override
     public void postHandle(HttpServletRequest request, HttpServletResponse response, Object handler, ModelAndView modelAndView) {
-/*        User user = hostHolder.getUser();
-        if (user!=null&&modelAndView!=null){
-            modelAndView.addObject("loginUser",user);
-        }*/
     }
 
     /**

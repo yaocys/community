@@ -1,15 +1,11 @@
 package com.example.community.controller;
 
-import com.alibaba.fastjson.JSONObject;
 import com.example.community.common.ApiResult;
-import com.example.community.entity.User;
-import com.example.community.entity.VO.UserVO;
 import com.example.community.exception.VerifyException;
 import com.example.community.service.LoginService;
 import com.example.community.service.UserService;
 import com.example.community.util.CommunityConstant;
 import com.example.community.util.CommunityUtil;
-import com.example.community.util.HostHolder;
 import com.example.community.util.RedisKeyUtil;
 import com.google.code.kaptcha.Producer;
 import io.swagger.annotations.Api;
@@ -18,6 +14,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import javax.imageio.ImageIO;
@@ -26,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,8 +43,6 @@ public class ApiLoginController implements CommunityConstant {
     private Producer producer;
     @Resource
     private RedisTemplate redisTemplate;
-    @Resource
-    private HostHolder hostHolder;
 
     @ApiOperation("注册")
     @PostMapping(path = "/register")
@@ -90,7 +86,8 @@ public class ApiLoginController implements CommunityConstant {
         String captchaOwner = CommunityUtil.generateUUID();
         Cookie cookie = new Cookie("captchaOwner", captchaOwner);
         cookie.setMaxAge(60);
-        cookie.setPath(contextPath);
+        cookie.setDomain("yaos.cc");
+        cookie.setPath("/");
         response.addCookie(cookie);
 
         String text = producer.createText();
@@ -117,18 +114,31 @@ public class ApiLoginController implements CommunityConstant {
      */
     @ApiOperation("登录")
     @PostMapping("/login")
-    public ApiResult<UserVO> login(String username, String password, String captcha, boolean rememberMe,
-                                   HttpServletResponse response,
-                                   @CookieValue(value = "captchaOwner", required = false) String captchaOwner) {
+    public ApiResult<Map<String, Object>> login(String username, String password, String captcha, boolean rememberMe,
+                                                HttpServletResponse response,
+                                                @CookieValue(value = "captchaOwner", required = false) String captchaOwner) {
+        Map<String, Object> userInfo;
         try {
             loginService.verifyCaptcha(captcha, captchaOwner);
-            userService.login(username, password, rememberMe,response);
+            userInfo = userService.login(username, password, rememberMe, response);
         } catch (VerifyException e) {
             return ApiResult.fail(e.getMessage());
         } catch (Exception e) {
             return ApiResult.error(e.getMessage());
         }
-        return ApiResult.success("登录成功");
+        return ApiResult.success("登录成功", userInfo);
+    }
+
+    @ApiOperation("微信登录")
+    @PostMapping("/wechatLogin")
+    public ApiResult<String> wechatLogin(@RequestParam String code,String nickname,String headerUrl) {
+        String ticket;
+        try {
+            ticket = loginService.wechatLogin(code,nickname,headerUrl);
+        } catch (Exception e) {
+            return ApiResult.error("Login fail");
+        }
+        return ApiResult.success("Login success", ticket);
     }
 
     @ApiOperation("注销登录")

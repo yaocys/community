@@ -1,7 +1,7 @@
 # 公共配置
 server:
   servlet:
-    context-path: /api
+    context-path: /community
 
 spring:
   # 指定选择的配置文件
@@ -124,3 +124,7 @@ qiniu:
     header:
       name: community-user-header2url
       url: yaos.cc
+
+wechat:
+  appId: wx0523e122aa5962bc
+  appSecret: bfd8069a759378e001585d91fb6d18ac
