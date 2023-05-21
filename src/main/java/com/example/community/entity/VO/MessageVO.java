@@ -2,13 +2,17 @@ package com.example.community.entity.VO;
 
 import com.example.community.entity.Message;
 import com.example.community.entity.User;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * @author yaosunique@gmail.com
  * 2023/3/28 14:48
  */
 @Data
+@NoArgsConstructor
+@AllArgsConstructor
 public class MessageVO extends Message {
     private int letterCount;
 

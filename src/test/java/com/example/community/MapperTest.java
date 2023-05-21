@@ -2,14 +2,18 @@ package com.example.community;
 
 import com.example.community.dao.DiscussPostMapper;
 import com.example.community.dao.LoginTicketMapper;
+import com.example.community.dao.MessageMapper;
 import com.example.community.dao.UserMapper;
 import com.example.community.entity.DiscussPost;
 import com.example.community.entity.LoginTicket;
+import com.example.community.entity.Message;
 import com.example.community.entity.User;
 import com.example.community.util.MailClient;
 import org.junit.jupiter.api.Test;
+import org.junit.runner.RunWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.junit4.SpringRunner;
 
 import javax.annotation.Resource;
 import javax.xml.crypto.Data;
@@ -31,45 +35,21 @@ public class MapperTest {
     @Autowired
     private MailClient mailClient;
 
+    @Resource
+    private MessageMapper messageMapper;
+
     @Autowired
     private LoginTicketMapper loginTicketMapper;
 
     @Test
     public void testSelectPost(){
-        /*List<DiscussPost> list = discussPostMapper.selectDiscussPosts(101,0,10);
-        //int count = discussPostMapper.selectDiscussPostRows(101);
-        for(DiscussPost post:list){
-            System.out.println(post);
-        }*/
-        User user = new User();
-        user.setId(2);
-        user.setUsername("test");
-        user.setPassword("123456");
-        user.setSalt("fae312");
-        user.setEmail("123.qq.com");
-        user.setType(1);
-        user.setStatus(1);
-        user.setActivationCode(null);
-        user.setHeaderUrl(null);
-        user.setCreateTime(new Date());
-        userMapper.insertUser(user);
-        //userMapper.updateStatus(111,1);
-        // User user = userMapper.selectById(111);
-        // System.out.println(user);
 
-        // System.out.println("查询到的记录行数："+count);
-        // mailClient.sendMail("yaosunique@gmail.com","test","Hello STMP!");
+        User user = userMapper.selectById(22);
+        System.out.println(user);
+
     }
 
     @Test
-    public void testLoginTicket(){
-        /*LoginTicket loginTicket = new LoginTicket();
-        loginTicket.setId(101);
-        loginTicket.setTicket("abc");
-        loginTicket.setStatus(0);
-        loginTicket.setExpired(new Date(System.currentTimeMillis()+1000*60*10));
-        loginTicketMapper.insertLoginTicket(loginTicket);*/
-        System.out.println(loginTicketMapper.selectByTicket("abc"));
-        loginTicketMapper.updateStatus("abc",1);
+    public void testMessage(){
     }
 }

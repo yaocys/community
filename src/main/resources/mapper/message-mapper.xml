@@ -27,7 +27,6 @@
         group by conversation_id
         )
         order by id desc
-        limit #{offset}, #{limit}
     </select>
     <!--先查了每个会话最新的一条消息
     然后计数（显示多少条对话消息？）-->

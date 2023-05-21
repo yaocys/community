@@ -98,6 +98,7 @@ mybatis:
     # 启用自动增长组件
     map-underscore-to-camel-case: true
     # 自动匹配驼峰和_命名方式
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
 
 pagehelper:
   propertyName: propertyValue
@@ -128,3 +129,7 @@ qiniu:
 wechat:
   appId: wx0523e122aa5962bc
   appSecret: bfd8069a759378e001585d91fb6d18ac
+
+logging:
+  level:
+    org.mybatis: DEBUG

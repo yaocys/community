@@ -1,10 +1,13 @@
 package com.example.community.entity;
 
+import lombok.ToString;
+
 import java.util.Date;
 
 /**
  * @author yao 2022/4/17
  */
+@ToString
 public class User {
     private int id;
     private String username;
@@ -95,21 +98,5 @@ public class User {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
-    }
-
-    @Override
-    public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                ", salt='" + salt + '\'' +
-                ", email='" + email + '\'' +
-                ", type=" + type +
-                ", status=" + status +
-                ", activationCode='" + activationCode + '\'' +
-                ", headerUrl='" + headerUrl + '\'' +
-                ", createTime=" + createTime +
-                '}';
     }
 }

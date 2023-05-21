@@ -43,7 +43,7 @@ public class ApiSearchController implements CommunityConstant {
     @GetMapping("/search")
     public ApiResult<PageInfo<DiscussPostVO>> search(String keyword, int current, int limit) throws IOException {
         List<DiscussPostVO> discussPostVOList = new ArrayList<>();
-        PageHelper.startPage((current - 1) * 10, limit);
+        PageHelper.startPage(current, limit);
         //搜索帖子
         SearchResult searchResult = elasticSearchService.searchDiscussPost(keyword, (current - 1) * 10, limit);
         // 重新封装一份数据，加入用户和点赞数量信息

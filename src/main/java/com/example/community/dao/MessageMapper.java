@@ -2,6 +2,7 @@ package com.example.community.dao;
 
 import com.example.community.entity.Message;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -18,7 +19,7 @@ public interface MessageMapper {
      * @param limit 分页条数
      * @return 返回一条最新的私信
      */
-    List<Message> selectConversations(int userId, int offset, int limit);
+    List<Message> selectConversations(@Param("userId") int userId);
 
     /**
      * 查询当前用户的会话数量

@@ -25,7 +25,7 @@ public class MessageService {
 
     public PageInfo<Message> findConversations(int userId, int offset, int limit) {
         PageHelper.startPage(offset, limit);
-        List<Message> messageList = messageMapper.selectConversations(userId, offset, limit);
+        List<Message> messageList = messageMapper.selectConversations(userId);
         return new PageInfo<>(messageList);
     }
 
