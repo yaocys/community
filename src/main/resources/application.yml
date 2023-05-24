@@ -4,6 +4,8 @@ server:
     context-path: /community
 
 spring:
+  main:
+    web-application-type: none
   # 指定选择的配置文件
   profiles:
     active: app

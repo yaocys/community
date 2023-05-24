@@ -18,6 +18,8 @@ import org.springframework.web.client.RestTemplate;
 
 import javax.annotation.Resource;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 import static com.example.community.util.CommunityConstant.DEFAULT_EXPIRED_SECONDS;
 
@@ -63,13 +65,13 @@ public class LoginService {
      * @param code 微信提供的
      * @return 登录凭证token
      */
-    public String wechatLogin(String code,String nickname,String headerUrl){
+    public Map<String,Object> wechatLogin(String code,String nickname,String headerUrl){
         String WECHAT_LOGIN_API = "https://api.weixin.qq.com/sns/jscode2session?appid=";
         String url = WECHAT_LOGIN_API +appId+ "&secret=" + appSecret + "&js_code=" + code + "&grant_type=authorization_code";
         ResponseEntity<String> response = restTemplate.exchange(url, HttpMethod.GET, null, String.class);
 
         LoginTicket loginTicket = new LoginTicket();
-
+        Map<String,Object> res = new HashMap<>();
         if (response.getStatusCode() == HttpStatus.OK) {
             String responseBody = response.getBody();
             JSONObject json = JSONObject.parseObject(responseBody);
@@ -97,7 +99,10 @@ public class LoginService {
 
             String redisKey = RedisKeyUtil.getTicketKey(loginTicket.getTicket());
             redisTemplate.opsForValue().set(redisKey, loginTicket);
+
+            res.put("ticket",loginTicket.getTicket());
+            res.put("userId",user.getId());
         }
-        return loginTicket.getTicket();
+        return res;
     }
 }

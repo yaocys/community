@@ -31,7 +31,8 @@ import java.io.OutputStream;
 @Api(tags = "用户API")
 @RestController
 @RequestMapping("/user")
-public class ApiUserController implements CommunityConstant {
+public class
+ApiUserController implements CommunityConstant {
     @Value("${community.path.upload}")
     private String uploadPath;
     @Value("${community.path.domain}")
@@ -74,7 +75,7 @@ public class ApiUserController implements CommunityConstant {
         User user = hostHolder.getUser();
         String headerUrl = domain + contextPath + "/user/header/" + fileName;
         userService.updateHeader(user.getId(), headerUrl);
-        return ApiResult.success("头像上传成功");
+        return ApiResult.success("头像上传成功",headerUrl);
     }
 
     @ApiOperation("获取头像")

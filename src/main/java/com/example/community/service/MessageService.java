@@ -3,6 +3,7 @@ package com.example.community.service;
 import com.example.community.dao.MessageMapper;
 import com.example.community.entity.Message;
 import com.example.community.util.SensitiveFilter;
+import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -33,8 +34,10 @@ public class MessageService {
         return messageMapper.selectConversationCount(userId);
     }
 
-    public List<Message> findLetters(String conversationId, int offset, int limit) {
-        return messageMapper.selectLetters(conversationId, offset, limit);
+    public PageInfo<Message> findLetters(String conversationId, int offset, int limit) {
+        PageHelper.startPage(offset,limit);
+        List<Message> messageList =  messageMapper.selectLetters(conversationId);
+        return new PageInfo<>(messageList);
     }
 
     public int findLetterCount(String conversationId) {

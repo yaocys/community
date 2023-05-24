@@ -30,7 +30,7 @@ public interface MessageMapper {
      * 查询某个会话所包含的私信列表
      * @param conversationId 会话ID
      */
-    List<Message> selectLetters(String conversationId, int offset, int limit);
+    List<Message> selectLetters(String conversationId);
 
     /**
      * 查询某个会话所包含的私信数量

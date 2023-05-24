@@ -131,14 +131,14 @@ public class ApiLoginController implements CommunityConstant {
 
     @ApiOperation("微信登录")
     @PostMapping("/wechatLogin")
-    public ApiResult<String> wechatLogin(@RequestParam String code,String nickname,String headerUrl) {
-        String ticket;
+    public ApiResult<Map<String,Object>> wechatLogin(String code,String nickname,String headerUrl) {
+        Map<String,Object> res;
         try {
-            ticket = loginService.wechatLogin(code,nickname,headerUrl);
+            res = loginService.wechatLogin(code,nickname,headerUrl);
         } catch (Exception e) {
             return ApiResult.error("Login fail");
         }
-        return ApiResult.success("Login success", ticket);
+        return ApiResult.success("Login success", res);
     }
 
     @ApiOperation("注销登录")

@@ -50,7 +50,6 @@
         and from_id != 1
         and conversation_id = #{conversationId}
         order by id desc
-        limit #{offset}, #{limit}
     </select>
 
     <!--查询对话的消息数量-->

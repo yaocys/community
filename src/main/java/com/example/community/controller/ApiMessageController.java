@@ -114,11 +114,11 @@ public class ApiMessageController implements CommunityConstant {
     @GetMapping("/letter/detail/{conversationId}")
     public ApiResult<?> getLetterDetail(@PathVariable("conversationId") String conversationId, int offset, int limit) {
         // 私信列表
-        List<Message> letterList = messageService.findLetters(conversationId, offset, limit);
+        PageInfo<Message> letterList = messageService.findLetters(conversationId, offset, limit);
 
         List<Map<String, Object>> letters = new ArrayList<>();
         if (letterList != null) {
-            for (Message message : letterList) {
+            for (Message message : letterList.getList()) {
                 Map<String, Object> map = new HashMap<>();
                 map.put("letter", message);
                 // 显示消息发送人的头像，可能是当前用户，也有可能是目标用户
@@ -134,9 +134,12 @@ public class ApiMessageController implements CommunityConstant {
         resultMap.put("target", getLetterTarget(conversationId));
 
         // 用户打开页面就把未读的消息设置为已读
-        List<Integer> ids = getLetterIds(letterList);
+        List<Integer> ids = null;
+        if (letterList != null) {
+            ids = getLetterIds(letterList.getList());
+        }
 
-        if (!ids.isEmpty()) messageService.readMessage(ids);
+        if (ids != null && !ids.isEmpty()) messageService.readMessage(ids);
 
         return ApiResult.success("对话列表查询成功", resultMap);
     }
