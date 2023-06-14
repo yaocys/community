@@ -61,10 +61,8 @@ public class ElasticSearchService {
         highlightBuilder.field("title");
         highlightBuilder.field("content");
         highlightBuilder.requireFieldMatch(false);
-/*        highlightBuilder.preTags("<span style='color:red'>");
-        highlightBuilder.postTags("</span>");*/
-        highlightBuilder.preTags("<text style='color:red'>");
-        highlightBuilder.postTags("</text>");
+        highlightBuilder.preTags("<span style='color:red'>");
+        highlightBuilder.postTags("</span>");
 
         /*
         构建搜索条件

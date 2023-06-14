@@ -82,13 +82,10 @@ public class SensitiveFilter {
      * @return 过滤后的文本
      */
     public String filter(String text) {
-
         if (StringUtils.isBlank(text)) return null;
-
         StringBuilder sb = new StringBuilder();
         TrieNode tempNode = rootNode;
         int begin = 0, position = 0;
-
         while (position < text.length()) {
             char c = text.charAt(position);
 
@@ -103,9 +100,7 @@ public class SensitiveFilter {
                 position++;
                 continue;
             }
-
             tempNode = tempNode.getSubNode(c);
-
             if (tempNode == null) {
                 sb.append(text.charAt(begin));
                 position = ++begin;
@@ -118,7 +113,6 @@ public class SensitiveFilter {
         }
         // 如果存在疑似，但是没判定完但是原文本就结束了，需要有一步类似于flush()操作
         sb.append(text.substring(begin));
-
         return sb.toString();
     }
 
