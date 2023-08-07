@@ -1,5 +1,6 @@
 package com.example.community.controller.advice;
 
+import lombok.extern.slf4j.Slf4j;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
@@ -16,16 +17,15 @@ import java.io.PrintWriter;
  * 只扫描带有Controller注解的Bean
  * @author yao 2022/11/28
  */
+@Slf4j
 @ControllerAdvice(annotations = Controller.class)
 public class ExceptionAdvice {
 
-    private static final Logger logger = LoggerFactory.getLogger(ExceptionAdvice.class);
-
     @ExceptionHandler({Exception.class})
     public void handleException(Exception exception, HttpServletRequest request, HttpServletResponse response) throws IOException {
-        logger.error("服务器发生异常："+exception.getMessage());
+        log.error("服务器发生异常："+exception.getMessage());
         for(StackTraceElement stackTraceElement:exception.getStackTrace()){
-            logger.error(stackTraceElement.toString());
+            log.error(stackTraceElement.toString());
         }
 
         // 判断请求类型，是返回页面还是返回JSON数据

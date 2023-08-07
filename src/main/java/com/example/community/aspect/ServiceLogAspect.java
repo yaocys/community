@@ -1,5 +1,6 @@
 package com.example.community.aspect;
 
+import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
@@ -18,8 +19,9 @@ import java.util.Date;
  */
 @Component
 @Aspect
+@Slf4j
 public class ServiceLogAspect {
-    private static final Logger logger = LoggerFactory.getLogger(ServiceLogAspect.class);
+    // private static final Logger logger = LoggerFactory.getLogger(ServiceLogAspect.class);
 
     /**
      * 对service包下所有类，所有参数返回值的所有方法
@@ -41,6 +43,6 @@ public class ServiceLogAspect {
         // 获取执行的方法以其返回值
         String target = join.getSignature().getDeclaringTypeName()+join.getSignature().getName();
 
-        logger.info(String.format("用户[%s]，在[%s]，访问了[%s]",IP,now,target));
+        log.info(String.format("用户[%s]，在[%s]，访问了[%s]",IP,now,target));
     }
 }

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration status="WARN" monitorinterval="30">
+
+    <properties>
+        <property name="LOG_HOME">/logs</property>
+    </properties>
+
+    <Appenders>
+        <!-- 定义日志输出到控制台 -->
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout pattern="log4j2 %d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+        </Console>
+        <!--输出到文件-->
+        <RollingFile name="rollingFile" fileName="${sys:user.home}/logs/info.log"
+                     filePattern="${sys:user.home}/$${date:yyyy-MM-dd}/logs/info-%d{yyyy-MM-dd-HH-mm}-%i.log">
+            <ThresholdFilter level="info" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="%d{HH:mm:ss.SSS} [%t] %-5level %logger{36} - %msg%n"/>
+            <Policies>
+                <!--系统启动时产生一个新的日志文件-->
+                <OnStartupTriggeringPolicy/>
+                <!--按照文件大小-->
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+                <!--按照时间节点-->
+                <TimeBasedTriggeringPolicy/>
+            </Policies>
+            <!--同一目录下，文件个数限定为30，超过则覆盖-->
+            <DefaultRolloverStrategy max="30"/>
+        </RollingFile>
+        <RollingFile name="RollingFileError" fileName="${sys:user.home}/logs/error.log"
+                     filePattern="${sys:user.home}/logs/$${date:yyyy-MM}/error-%d{yyyy-MM-dd}-%i.log">
+            <ThresholdFilter level="error" onMatch="ACCEPT" onMismatch="DENY"/>
+            <PatternLayout pattern="[%d{HH:mm:ss:SSS}] [%p] - %l - %m%n"/>
+            <Policies>
+                <TimeBasedTriggeringPolicy/>
+                <SizeBasedTriggeringPolicy size="100 MB"/>
+            </Policies>
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <!-- 设置根日志级别 -->
+        <!--过滤掉spring和mybatis的一些无用的DEBUG信息-->
+        <logger name="org.springframework" level="INFO"/>
+        <logger name="org.mybatis" level="INFO"/>
+        <Root level="info">
+            <AppenderRef ref="rollingFile"/>
+            <appender-ref ref="RollingFileError"/>
+        </Root>
+    </Loggers>
+</Configuration>

@@ -133,5 +133,6 @@ wechat:
   appSecret: bfd8069a759378e001585d91fb6d18ac
 
 logging:
+  config: classpath:log4j2.xml
   level:
     org.mybatis: DEBUG
